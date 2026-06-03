@@ -1,0 +1,7 @@
+# SAFETY: ignore EVERYTHING by default, then whitelist ONLY the public website.
+# This prevents secrets (poster/.env, API keys, business docs) from ever being committed.
+/*
+
+# Re-include only what should be public:
+!/.gitignore
+!/index.html

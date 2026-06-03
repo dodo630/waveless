@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waveless — The Silent Ring</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --void: #060608;
+    --obsidian: #0d0d12;
+    --slate: #161620;
+    --mist: #a8aab8;
+    --silver: #d4d6e0;
+    --white: #f0f1f5;
+    --gold: #c9a96e;
+    --gold-light: #e8d5a8;
+    --gold-dim: #7a6040;
+    --accent: #6e8ea0;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--void);
+    color: var(--white);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease, opacity 0.2s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(201,169,110,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.18s ease, width 0.3s, height 0.3s, opacity 0.3s;
+  }
+
+  /* Nav */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 60px;
+    height: 52px;
+    background: rgba(6,6,8,0.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    color: var(--white);
+    text-decoration: none;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-logo-mark {
+    width: 44px;
+    height: 30px;
+    flex-shrink: 0;
+    object-fit: contain;
+  }
+  .nav-links {
+    display: flex; gap: 40px; list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--mist);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-cta {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--void);
+    background: var(--gold);
+    padding: 10px 24px;
+    text-decoration: none;
+    transition: background 0.3s;
+  }
+  .nav-cta:hover { background: var(--gold-light); }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    padding: 120px 40px 80px;
+  }
+
+  /* 3D ring visual */
+  .ring-visual {
+    position: absolute;
+    width: 600px; height: 600px;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .ring-visual canvas {
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 0;
+    animation: ringFadeIn 2s ease 0.5s forwards;
+  }
+  @keyframes ringFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slowSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes pulseRing {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  /* Noise texture overlay */
+  .noise {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 1;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 200px;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+    position: relative; z-index: 2;
+    animation: fadeUp 1s ease 0.2s both;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: 0.05em;
+    color: var(--white);
+    position: relative; z-index: 2;
+    animation: fadeUp 1s ease 0.4s both;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .hero-subtitle {
+    margin-top: 28px;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    color: var(--mist);
+    max-width: 480px;
+    line-height: 1.8;
+    position: relative; z-index: 2;
+    animation: fadeUp 1s ease 0.6s both;
+  }
+  .hero-actions {
+    margin-top: 52px;
+    display: flex; gap: 20px; align-items: center;
+    position: relative; z-index: 2;
+    animation: fadeUp 1s ease 0.8s both;
+  }
+  .btn-primary {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--void);
+    background: var(--gold);
+    padding: 16px 40px;
+    text-decoration: none;
+    transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--gold-light);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .btn-primary:hover::after { transform: translateX(0); }
+  .btn-primary span { position: relative; z-index: 1; }
+
+  .btn-ghost {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--mist);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(168,170,184,0.3);
+    padding-bottom: 2px;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .btn-ghost:hover { color: var(--gold); border-color: var(--gold); }
+
+  .hero-scroll {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    z-index: 2;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    animation: fadeUp 1s ease 1.2s both;
+  }
+  .hero-scroll span {
+    font-size: 0.55rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+  .scroll-line {
+    width: 1px; height: 48px;
+    background: linear-gradient(to bottom, var(--gold-dim), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* THE CONCEPT SECTION */
+  .section-concept {
+    padding: 140px 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 100px;
+    align-items: center;
+    max-width: 1300px; margin: 0 auto;
+  }
+  .concept-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+  .concept-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 4vw, 3.8rem);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--white);
+    margin-bottom: 28px;
+  }
+  .concept-heading em { font-style: italic; color: var(--gold); }
+  .concept-body {
+    font-size: 0.85rem;
+    line-height: 2;
+    color: var(--mist);
+    margin-bottom: 20px;
+  }
+
+  .concept-visual {
+    position: relative;
+    display: flex; justify-content: center; align-items: center;
+  }
+  .concept-ring-art {
+    width: 320px; height: 320px;
+    position: relative;
+  }
+  .concept-ring-art svg { width: 100%; height: 100%; }
+
+  /* No-wave badge */
+  .no-wave-badge {
+    position: absolute;
+    top: -10px; right: -10px;
+    width: 90px; height: 90px;
+    background: var(--slate);
+    border: 1px solid var(--gold-dim);
+    border-radius: 50%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 10px;
+    animation: slowSpin 20s linear infinite;
+  }
+  .no-wave-badge span {
+    font-size: 0.5rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    line-height: 1.6;
+  }
+
+  /* Features grid */
+  .section-features {
+    padding: 120px 60px;
+    background: var(--obsidian);
+    position: relative;
+  }
+  .section-features::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+  }
+  .features-header {
+    text-align: center;
+    max-width: 600px; margin: 0 auto 80px;
+  }
+  .section-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 300;
+    color: var(--white);
+    line-height: 1.2;
+  }
+  .section-title em { font-style: italic; color: var(--gold); }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .feature-card {
+    background: var(--slate);
+    padding: 52px 40px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.4s;
+  }
+  .feature-card::before {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    transform: scaleX(0);
+    transition: transform 0.4s;
+  }
+  .feature-card:hover { background: #1a1a24; }
+  .feature-card:hover::before { transform: scaleX(1); }
+
+  .feature-icon {
+    width: 44px; height: 44px;
+    margin-bottom: 24px;
+    color: var(--gold);
+  }
+  .feature-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--white);
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+  }
+  .feature-desc {
+    font-size: 0.78rem;
+    line-height: 1.9;
+    color: var(--mist);
+  }
+  .feature-number {
+    position: absolute; top: 32px; right: 32px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: rgba(201,169,110,0.06);
+    line-height: 1;
+  }
+
+  /* Spec strip */
+  .spec-strip {
+    background: var(--gold);
+    padding: 20px 60px;
+    display: flex; justify-content: space-around; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .spec-item {
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+  }
+  .spec-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--void);
+    line-height: 1;
+  }
+  .spec-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(6,6,8,0.6);
+    margin-top: 4px;
+  }
+  .spec-divider {
+    width: 1px; height: 40px;
+    background: rgba(6,6,8,0.15);
+  }
+
+  /* Products */
+  .section-products {
+    padding: 140px 60px;
+    max-width: 1300px; margin: 0 auto;
+  }
+  .products-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 60px;
+  }
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .product-card {
+    background: var(--slate);
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.4s ease;
+  }
+  .product-card:hover { transform: translateY(-6px); }
+  .product-img {
+    aspect-ratio: 4/3;
+    background: var(--obsidian);
+    display: flex; justify-content: center; align-items: center;
+    position: relative; overflow: hidden;
+  }
+  .product-ring-svg {
+    width: 180px; height: 180px;
+    transition: transform 0.6s ease;
+  }
+  .product-card:hover .product-ring-svg { transform: rotate(20deg) scale(1.05); }
+
+  .product-glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(201,169,110,0.06) 0%, transparent 70%);
+  }
+  .product-info {
+    padding: 28px 28px 32px;
+  }
+  .product-badge {
+    display: inline-block;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--gold-dim);
+    padding: 4px 10px;
+    margin-bottom: 14px;
+  }
+  .product-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 300;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .product-tagline {
+    font-size: 0.75rem;
+    color: var(--mist);
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+  .product-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .product-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    color: var(--gold);
+  }
+  .product-price small {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--mist);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .btn-add {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--gold-dim);
+    padding: 10px 20px;
+    background: transparent;
+    cursor: none;
+    transition: all 0.3s;
+  }
+  .btn-add:hover { background: var(--gold); color: var(--void); }
+
+  /* Technology */
+  .section-tech {
+    padding: 140px 60px;
+    background: var(--obsidian);
+    position: relative; overflow: hidden;
+  }
+  .section-tech::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+  }
+  .tech-inner {
+    max-width: 1300px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.2fr; gap: 100px;
+    align-items: center;
+  }
+  .tech-diagram {
+    position: relative;
+    display: flex; justify-content: center; align-items: center;
+  }
+  .tech-diagram svg { width: 360px; height: 360px; }
+
+  .tech-content { }
+  .tech-steps {
+    margin-top: 48px;
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .tech-step {
+    display: flex; gap: 28px;
+    padding: 28px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+  }
+  .step-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--gold-dim);
+    line-height: 1;
+    min-width: 36px;
+  }
+  .step-content {}
+  .step-title {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .step-desc {
+    font-size: 0.78rem;
+    line-height: 1.8;
+    color: var(--mist);
+  }
+
+  /* Testimonials / ethos */
+  .section-ethos {
+    padding: 120px 60px;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .ethos-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--white);
+    max-width: 900px; margin: 0 auto;
+    line-height: 1.5;
+    position: relative; z-index: 2;
+  }
+  .ethos-quote::before {
+    content: '\201C';
+    font-size: 8rem;
+    position: absolute; top: -20px; left: -40px;
+    color: rgba(201,169,110,0.08);
+    font-style: normal;
+    line-height: 1;
+  }
+  .ethos-attr {
+    margin-top: 28px;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    position: relative; z-index: 2;
+  }
+  .ethos-line {
+    width: 1px; height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--gold-dim));
+    margin: 0 auto 24px;
+  }
+
+  /* Materials */
+  .section-materials {
+    padding: 120px 60px;
+    max-width: 1300px; margin: 0 auto;
+  }
+  .materials-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin-top: 60px;
+  }
+  .material-tile {
+    background: var(--slate);
+    padding: 48px 32px;
+    position: relative;
+  }
+  .material-swatch {
+    width: 48px; height: 4px;
+    margin-bottom: 24px;
+    border-radius: 2px;
+  }
+  .material-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .material-desc {
+    font-size: 0.75rem;
+    line-height: 1.8;
+    color: var(--mist);
+  }
+  .material-prop {
+    margin-top: 16px;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  /* CTA */
+  .section-cta {
+    padding: 160px 60px;
+    background: var(--obsidian);
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .section-cta::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+  }
+  .cta-bg-ring {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 700px; height: 700px;
+    border: 1px solid rgba(201,169,110,0.04);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .cta-bg-ring:nth-child(2) { width: 500px; height: 500px; border-color: rgba(201,169,110,0.06); }
+  .cta-bg-ring:nth-child(3) { width: 300px; height: 300px; border-color: rgba(201,169,110,0.08); }
+
+  .cta-eyebrow {
+    font-size: 0.6rem; letter-spacing: 0.4em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 24px; position: relative; z-index: 2;
+  }
+  .cta-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    font-weight: 300; line-height: 1;
+    color: var(--white);
+    margin-bottom: 24px; position: relative; z-index: 2;
+  }
+  .cta-heading em { font-style: italic; color: var(--gold); }
+  .cta-sub {
+    font-size: 0.85rem; line-height: 1.8;
+    color: var(--mist); max-width: 480px;
+    margin: 0 auto 52px; position: relative; z-index: 2;
+  }
+  .cta-form {
+    display: flex; gap: 0; justify-content: center;
+    position: relative; z-index: 2; max-width: 440px;
+    margin: 0 auto;
+  }
+  .cta-input {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-right: none;
+    padding: 16px 20px;
+    color: var(--white);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.8rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .cta-input::placeholder { color: rgba(168,170,184,0.4); }
+  .cta-input:focus { border-color: var(--gold-dim); }
+  .cta-submit {
+    background: var(--gold);
+    border: none;
+    padding: 16px 28px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--void);
+    cursor: none;
+    transition: background 0.3s;
+  }
+  .cta-submit:hover { background: var(--gold-light); }
+
+  /* Footer */
+  footer {
+    background: var(--void);
+    padding: 60px 60px 40px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .footer-inner {
+    max-width: 1300px; margin: 0 auto;
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px; margin-bottom: 60px;
+  }
+  .footer-brand {}
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; font-weight: 300;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--white); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .footer-logo span { color: var(--gold); }
+  .footer-logo-mark { width: 28px; height: 28px; flex-shrink: 0; }
+  .footer-tagline {
+    font-size: 0.75rem; line-height: 1.8;
+    color: var(--mist); max-width: 260px;
+  }
+  .footer-col-title {
+    font-size: 0.6rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 20px;
+  }
+  .footer-links { list-style: none; }
+  .footer-links li { margin-bottom: 10px; }
+  .footer-links a {
+    font-size: 0.78rem; color: var(--mist);
+    text-decoration: none; transition: color 0.3s;
+  }
+  .footer-links a:hover { color: var(--white); }
+  .footer-bottom {
+    max-width: 1300px; margin: 0 auto;
+    padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.04);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-copy {
+    font-size: 0.65rem; color: rgba(168,170,184,0.4);
+    letter-spacing: 0.1em;
+  }
+  .footer-tagline-bottom {
+    font-size: 0.6rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--gold-dim);
+  }
+
+  /* Scroll reveal */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    .nav-links, .nav-cta { display: none; }
+    .section-concept, .tech-inner { grid-template-columns: 1fr; gap: 60px; }
+    .concept-visual { order: -1; }
+    .features-grid, .products-grid, .materials-grid { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr 1fr; gap: 40px; }
+    .products-header { flex-direction: column; gap: 16px; align-items: flex-start; }
+    .section-concept, .section-features, .section-products,
+    .section-tech, .section-materials, .section-cta { padding: 80px 24px; }
+    .spec-strip { padding: 20px 24px; }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  // STEP 1: Paste your EmailJS Public Key below (from emailjs.com → Account → API Keys)
+  emailjs.init("XmvFjufW_EROzZ3mC");
+</script>
+</head>
+<body>
+
+<div class="noise"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <img class="nav-logo-mark" src="data:image/png;base64,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" alt="Logo" style="width:44px;height:30px;object-fit:contain;margin-right:6px;">
+    Wave<span>less</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#technology">Technology</a></li>
+    <li><a href="#collection">Collection</a></li>
+    <li><a href="#materials">Materials</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <a href="#waitlist" class="nav-cta">Join Waitlist</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="ring-visual">
+    <canvas id="ringCanvas"></canvas>
+  </div>
+
+  <p class="hero-eyebrow">Zero Emission · Maximum Intelligence</p>
+  <h1 class="hero-title">Wear the<br><em>Silence</em></h1>
+  <p class="hero-subtitle">The world's first premium smart ring that transfers all data through its charging port — no radio waves, no EMF, no compromise.</p>
+
+  <div class="hero-actions">
+    <a href="#collection" class="btn-primary"><span>Explore Collection</span></a>
+    <a href="#technology" class="btn-ghost">How it works</a>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- SPEC STRIP -->
+<div class="spec-strip">
+  <div class="spec-item">
+    <div class="spec-value">0</div>
+    <div class="spec-label">EMF Emissions</div>
+  </div>
+  <div class="spec-divider"></div>
+  <div class="spec-item">
+    <div class="spec-value">14+</div>
+    <div class="spec-label">Days Battery</div>
+  </div>
+  <div class="spec-divider"></div>
+  <div class="spec-item">
+    <div class="spec-value">IP68</div>
+    <div class="spec-label">Water Resistance</div>
+  </div>
+  <div class="spec-divider"></div>
+  <div class="spec-item">
+    <div class="spec-value">5yr</div>
+    <div class="spec-label">Warranty</div>
+  </div>
+  <div class="spec-divider"></div>
+  <div class="spec-item">
+    <div class="spec-value">24/7</div>
+    <div class="spec-label">Health Monitoring</div>
+  </div>
+</div>
+
+<!-- CONCEPT -->
+<section class="section-concept" id="about">
+  <div class="reveal">
+    <p class="concept-label">The Philosophy</p>
+    <h2 class="concept-heading">Built for those who demand <em>everything</em> — and compromise on nothing.</h2>
+    <p class="concept-body">Most smart devices flood your body with constant radio frequency radiation. Bluetooth, Wi-Fi, NFC — always broadcasting, always exposing. We chose a different path.</p>
+    <p class="concept-body">Waveless stores your health data on-device and syncs exclusively through a precision-engineered charging port. Your data transfers when you charge. Not a second before. Not a signal emitted.</p>
+    <p class="concept-body">Crafted from aerospace-grade materials with obsessive attention to longevity, each Waveless ring is built to outlast any device you've ever worn.</p>
+  </div>
+  <div class="concept-visual reveal">
+    <div class="concept-ring-art">
+      <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="ringBodyGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#2a2a36"/>
+            <stop offset="100%" stop-color="#0d0d12"/>
+          </radialGradient>
+          <linearGradient id="ringShineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#6a5030" stop-opacity="0"/>
+            <stop offset="40%" stop-color="#c9a96e" stop-opacity="0.8"/>
+            <stop offset="60%" stop-color="#e8d5a8" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#4a3820" stop-opacity="0.2"/>
+          </linearGradient>
+          <filter id="ringDepth">
+            <feDropShadow dx="0" dy="8" stdDeviation="20" flood-color="rgba(0,0,0,0.8)"/>
+            <feDropShadow dx="0" dy="-2" stdDeviation="4" flood-color="rgba(201,169,110,0.3)"/>
+          </filter>
+        </defs>
+        <!-- Ring body -->
+        <ellipse cx="160" cy="180" rx="140" ry="40" fill="rgba(0,0,0,0.3)" opacity="0.5"/>
+        <circle cx="160" cy="160" r="120" fill="url(#ringBodyGrad)" filter="url(#ringDepth)"/>
+        <circle cx="160" cy="160" r="120" fill="none" stroke="url(#ringShineGrad)" stroke-width="38"/>
+        <circle cx="160" cy="160" r="88" fill="url(#ringBodyGrad)"/>
+        <circle cx="160" cy="160" r="86" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="2"/>
+        <!-- Port -->
+        <rect x="143" y="252" width="34" height="10" rx="5" fill="#c9a96e" opacity="0.95"/>
+        <rect x="148" y="255" width="24" height="4" rx="2" fill="#060608" opacity="0.7"/>
+        <!-- Inner shine -->
+        <circle cx="130" cy="130" r="30" fill="radial-gradient" opacity="0.05"/>
+        <ellipse cx="130" cy="125" rx="20" ry="12" fill="white" opacity="0.04"/>
+        <!-- Sensor dots -->
+        <circle cx="160" cy="210" r="3" fill="#c9a96e" opacity="0.7"/>
+        <circle cx="150" cy="210" r="2" fill="#c9a96e" opacity="0.4"/>
+        <circle cx="170" cy="210" r="2" fill="#c9a96e" opacity="0.4"/>
+      </svg>
+      <div class="no-wave-badge">
+        <span>100%<br>EMF<br>Free</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section-features" id="technology">
+  <div class="features-header reveal">
+    <p class="section-label">Core Features</p>
+    <h2 class="section-title">Precision <em>engineered.</em><br>Thoughtfully silent.</h2>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <div class="feature-number">01</div>
+      <svg class="feature-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="22" cy="22" r="16"/>
+        <path d="M22 14v8l5 3"/>
+        <line x1="8" y1="22" x2="4" y2="22" stroke-dasharray="2 2"/>
+        <line x1="40" y1="22" x2="36" y2="22" stroke-dasharray="2 2"/>
+        <line x1="22" y1="8" x2="22" y2="4" stroke-dasharray="2 2"/>
+        <line x1="22" y1="40" x2="22" y2="36" stroke-dasharray="2 2"/>
+      </svg>
+      <div class="feature-name">Zero-Wave Sync</div>
+      <div class="feature-desc">All health data syncs exclusively via the charging port. No Bluetooth, no Wi-Fi, no NFC — zero radio frequency emissions during use.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-number">02</div>
+      <svg class="feature-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M22 6c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16"/>
+        <path d="M30 8l8-2-2 8"/>
+        <circle cx="22" cy="22" r="6"/>
+      </svg>
+      <div class="feature-name">Health Tracking</div>
+      <div class="feature-desc">Heart rate, SpO2, skin temperature, sleep stages, stress, HRV, steps — continuously logged on-device in a secure local store.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-number">03</div>
+      <svg class="feature-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="10" y="18" width="24" height="16" rx="2"/>
+        <path d="M16 18v-4a6 6 0 0 1 12 0v4"/>
+        <circle cx="22" cy="26" r="2" fill="currentColor"/>
+      </svg>
+      <div class="feature-name">On-Device Encryption</div>
+      <div class="feature-desc">AES-256 encrypted storage directly in the ring. Your biometric data never leaves until you plug in — and only to your paired device.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-number">04</div>
+      <svg class="feature-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M6 38l8-14 8 8 6-10 10 16"/>
+        <circle cx="34" cy="12" r="6"/>
+        <path d="M30 8l4 4 4-4"/>
+      </svg>
+      <div class="feature-name">14-Day Battery</div>
+      <div class="feature-desc">Without the constant power drain of wireless radios, Waveless achieves unprecedented battery life — up to 14 days on a single charge.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-number">05</div>
+      <svg class="feature-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M22 4c-10 0-16 8-16 18 0 4 1.5 8 4 11"/>
+        <path d="M22 4c10 0 16 8 16 18 0 4-1.5 8-4 11"/>
+        <path d="M14 36l8 4 8-4"/>
+        <circle cx="22" cy="22" r="4"/>
+      </svg>
+      <div class="feature-name">IP68 Waterproof</div>
+      <div class="feature-desc">Sealed against water and dust to IP68 rating — 100m depth for 2 hours. Swim, shower, sweat without hesitation.</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-number">06</div>
+      <svg class="feature-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5">
+        <polygon points="22,4 38,34 6,34"/>
+        <line x1="22" y1="18" x2="22" y2="26"/>
+        <circle cx="22" cy="30" r="1.5" fill="currentColor"/>
+      </svg>
+      <div class="feature-name">Lifetime Repairs</div>
+      <div class="feature-desc">Every ring comes with lifetime repair coverage and a 5-year warranty. We build things to last — and we stand behind them.</div>
+    </div>
+  </div>
+</section>
+
+<!-- COLLECTION -->
+<section class="section-products" id="collection">
+  <div class="products-header reveal">
+    <div>
+      <p class="section-label">The Collection</p>
+      <h2 class="section-title">Choose your <em>silence.</em></h2>
+    </div>
+    <a href="#" class="btn-ghost">View All →</a>
+  </div>
+  <div class="products-grid">
+
+    <!-- Ring 1 -->
+    <div class="product-card reveal">
+      <div class="product-img">
+        <div class="product-glow"></div>
+        <svg class="product-ring-svg" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="voidGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1a1a22"/>
+              <stop offset="50%" stop-color="#2e2e3e"/>
+              <stop offset="100%" stop-color="#0d0d12"/>
+            </linearGradient>
+            <linearGradient id="voidShine" x1="20%" y1="20%" x2="80%" y2="80%">
+              <stop offset="0%" stop-color="#3a3a4a"/>
+              <stop offset="50%" stop-color="#5a5a6e"/>
+              <stop offset="100%" stop-color="#1a1a22"/>
+            </linearGradient>
+          </defs>
+          <circle cx="90" cy="90" r="72" fill="url(#voidGrad)"/>
+          <circle cx="90" cy="90" r="72" fill="none" stroke="url(#voidShine)" stroke-width="24"/>
+          <circle cx="90" cy="90" r="56" fill="url(#voidGrad)"/>
+          <rect x="78" y="142" width="24" height="7" rx="3.5" fill="#888" opacity="0.8"/>
+        </svg>
+      </div>
+      <div class="product-info">
+        <span class="product-badge">Signature</span>
+        <div class="product-name">Waveless Void</div>
+        <div class="product-tagline">Tungsten carbide finish. Matte black. The purist's choice — invisible on the hand, relentless in function.</div>
+        <div class="product-footer">
+          <div class="product-price">
+            <small>Starting at</small>
+            $349
+          </div>
+          <button class="btn-add" onclick="openReserve('Waveless Void')">Reserve →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ring 2 -->
+    <div class="product-card reveal">
+      <div class="product-img">
+        <div class="product-glow"></div>
+        <svg class="product-ring-svg" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="goldBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1e1810"/>
+              <stop offset="50%" stop-color="#2c2010"/>
+              <stop offset="100%" stop-color="#120e08"/>
+            </linearGradient>
+            <linearGradient id="goldBandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#6a5030"/>
+              <stop offset="30%" stop-color="#c9a96e"/>
+              <stop offset="55%" stop-color="#e8d5a8"/>
+              <stop offset="80%" stop-color="#c9a96e"/>
+              <stop offset="100%" stop-color="#6a5030"/>
+            </linearGradient>
+          </defs>
+          <circle cx="90" cy="90" r="72" fill="url(#goldBodyGrad)"/>
+          <circle cx="90" cy="90" r="72" fill="none" stroke="url(#goldBandGrad)" stroke-width="24"/>
+          <circle cx="90" cy="90" r="56" fill="url(#goldBodyGrad)"/>
+          <rect x="78" y="142" width="24" height="7" rx="3.5" fill="#c9a96e" opacity="0.9"/>
+          <rect x="82" y="145" width="16" height="1" rx="0.5" fill="#060608" opacity="0.6"/>
+        </svg>
+      </div>
+      <div class="product-info">
+        <span class="product-badge">Prestige</span>
+        <div class="product-name">Waveless Aurum</div>
+        <div class="product-tagline">18k gold-plated titanium. For those who wear their standards as openly as they wear their rings.</div>
+        <div class="product-footer">
+          <div class="product-price">
+            <small>Starting at</small>
+            $549
+          </div>
+          <button class="btn-add" onclick="openReserve('Waveless Aurum')">Reserve →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ring 3 -->
+    <div class="product-card reveal">
+      <div class="product-img">
+        <div class="product-glow"></div>
+        <svg class="product-ring-svg" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="silverBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#14141e"/>
+              <stop offset="50%" stop-color="#1e1e2c"/>
+              <stop offset="100%" stop-color="#0a0a12"/>
+            </linearGradient>
+            <linearGradient id="silverBandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#4a5060"/>
+              <stop offset="30%" stop-color="#9aa0b8"/>
+              <stop offset="55%" stop-color="#d4d8e8"/>
+              <stop offset="80%" stop-color="#9aa0b8"/>
+              <stop offset="100%" stop-color="#4a5060"/>
+            </linearGradient>
+          </defs>
+          <circle cx="90" cy="90" r="72" fill="url(#silverBodyGrad)"/>
+          <circle cx="90" cy="90" r="72" fill="none" stroke="url(#silverBandGrad)" stroke-width="24"/>
+          <circle cx="90" cy="90" r="56" fill="url(#silverBodyGrad)"/>
+          <rect x="78" y="142" width="24" height="7" rx="3.5" fill="#9aa0b8" opacity="0.9"/>
+        </svg>
+      </div>
+      <div class="product-info">
+        <span class="product-badge">Essential</span>
+        <div class="product-name">Waveless Lumen</div>
+        <div class="product-tagline">Polished surgical steel. Refined simplicity — a ring that lets your data speak louder than your jewelry.</div>
+        <div class="product-footer">
+          <div class="product-price">
+            <small>Starting at</small>
+            $279
+          </div>
+          <button class="btn-add">Reserve →</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Ring 4 -->
+    <div class="product-card reveal">
+      <div class="product-img">
+        <div class="product-glow" style="background: radial-gradient(circle at 50% 50%, rgba(42,100,160,0.12) 0%, transparent 70%);"></div>
+        <svg class="product-ring-svg" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sapphireBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#080e1a"/>
+              <stop offset="50%" stop-color="#0e1828"/>
+              <stop offset="100%" stop-color="#04080f"/>
+            </linearGradient>
+            <linearGradient id="sapphireBandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1a3058"/>
+              <stop offset="25%" stop-color="#2a5a9a"/>
+              <stop offset="50%" stop-color="#4a8ed4"/>
+              <stop offset="75%" stop-color="#2a5a9a"/>
+              <stop offset="100%" stop-color="#1a3058"/>
+            </linearGradient>
+            <radialGradient id="sapphireSheen" cx="35%" cy="30%" r="50%">
+              <stop offset="0%" stop-color="#7ab8f5" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#1a3058" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="90" cy="90" r="72" fill="url(#sapphireBodyGrad)"/>
+          <circle cx="90" cy="90" r="72" fill="none" stroke="url(#sapphireBandGrad)" stroke-width="24"/>
+          <circle cx="90" cy="90" r="72" fill="none" stroke="url(#sapphireSheen)" stroke-width="24"/>
+          <circle cx="90" cy="90" r="56" fill="url(#sapphireBodyGrad)"/>
+          <rect x="78" y="142" width="24" height="7" rx="3.5" fill="#2a5a9a" opacity="0.9"/>
+          <rect x="82" y="145" width="16" height="1" rx="0.5" fill="#7ab8f5" opacity="0.4"/>
+        </svg>
+      </div>
+      <div class="product-info">
+        <span class="product-badge" style="background: rgba(42,90,154,0.15); color: #7ab8f5; border-color: rgba(74,142,212,0.3);">Limited</span>
+        <div class="product-name">Waveless Sapphire</div>
+        <div class="product-tagline">Lab-grown sapphire crystal shell. Deep blue. For the collector who demands the rarest of materials.</div>
+        <div class="product-footer">
+          <div class="product-price">
+            <small>Starting at</small>
+            $749
+          </div>
+          <button class="btn-add" onclick="openReserve('Waveless Sapphire')">Reserve →</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- TECHNOLOGY -->
+<section class="section-tech">
+  <div class="tech-inner">
+    <div class="tech-diagram reveal">
+      <svg viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="techGlow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+          <linearGradient id="dataFlow" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#c9a96e" stop-opacity="0"/>
+            <stop offset="50%" stop-color="#c9a96e" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#c9a96e" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Ring -->
+        <circle cx="180" cy="130" r="80" fill="none" stroke="#2a2a3a" stroke-width="26"/>
+        <circle cx="180" cy="130" r="80" fill="none" stroke="url(#bandGrad)" stroke-width="24"/>
+        <circle cx="180" cy="130" r="56" fill="#0d0d12"/>
+
+        <!-- Port on ring -->
+        <rect x="165" y="192" width="30" height="8" rx="4" fill="#c9a96e"/>
+        <rect x="170" y="195" width="20" height="2" rx="1" fill="#060608" opacity="0.7"/>
+
+        <!-- Cable line -->
+        <line x1="180" y1="200" x2="180" y2="280" stroke="#2a2a3a" stroke-width="2"/>
+        <line x1="180" y1="200" x2="180" y2="280" stroke="url(#dataFlow)" stroke-width="2">
+          <animateTransform attributeName="gradientTransform" type="translate" from="0 -80" to="0 80" dur="2s" repeatCount="indefinite"/>
+        </line>
+
+        <!-- Data packets animation -->
+        <circle r="3" fill="#c9a96e" opacity="0.9" filter="url(#techGlow)">
+          <animateMotion path="M180,200 L180,280" dur="1.5s" repeatCount="indefinite" begin="0s"/>
+        </circle>
+        <circle r="3" fill="#c9a96e" opacity="0.9" filter="url(#techGlow)">
+          <animateMotion path="M180,200 L180,280" dur="1.5s" repeatCount="indefinite" begin="0.5s"/>
+        </circle>
+        <circle r="3" fill="#c9a96e" opacity="0.9" filter="url(#techGlow)">
+          <animateMotion path="M180,200 L180,280" dur="1.5s" repeatCount="indefinite" begin="1s"/>
+        </circle>
+
+        <!-- Charging base -->
+        <rect x="140" y="278" width="80" height="48" rx="6" fill="#161620" stroke="#2a2a3a" stroke-width="1"/>
+        <rect x="165" y="276" width="30" height="4" rx="2" fill="#c9a96e" opacity="0.6"/>
+        <rect x="155" y="292" width="50" height="2" rx="1" fill="rgba(201,169,110,0.2)"/>
+        <rect x="155" y="298" width="50" height="2" rx="1" fill="rgba(201,169,110,0.15)"/>
+        <rect x="155" y="304" width="35" height="2" rx="1" fill="rgba(201,169,110,0.1)"/>
+
+        <!-- No radio waves - crossed out signal icon -->
+        <g transform="translate(270, 60)" opacity="0.6">
+          <circle cx="0" cy="0" r="22" fill="#1a0808" stroke="#4a1a1a" stroke-width="1"/>
+          <path d="M-8 6 Q0 -2 8 6" fill="none" stroke="#c66" stroke-width="1.5"/>
+          <path d="M-13 10 Q0 -5 13 10" fill="none" stroke="#c66" stroke-width="1.5"/>
+          <line x1="-14" y1="-14" x2="14" y2="14" stroke="#e44" stroke-width="2"/>
+          <circle cx="0" cy="8" r="2" fill="#c66"/>
+        </g>
+
+        <!-- Labels -->
+        <text x="270" y="96" font-family="Jost" font-size="7" fill="#666" text-anchor="middle" letter-spacing="1">NO RF</text>
+
+        <!-- Sensor dots on ring -->
+        <circle cx="180" cy="185" r="2" fill="#c9a96e" opacity="0.6"/>
+        <circle cx="172" cy="184" r="1.5" fill="#c9a96e" opacity="0.4"/>
+        <circle cx="188" cy="184" r="1.5" fill="#c9a96e" opacity="0.4"/>
+      </svg>
+    </div>
+    <div class="tech-content reveal">
+      <p class="section-label">The Technology</p>
+      <h2 class="section-title">How <em>silence</em><br>syncs your world.</h2>
+      <div class="tech-steps">
+        <div class="tech-step">
+          <div class="step-num">I</div>
+          <div class="step-content">
+            <div class="step-title">Sense & Store</div>
+            <div class="step-desc">Onboard sensors continuously capture biometric data — heart rate, temperature, SpO2, movement. Everything is encrypted and stored locally in the ring's secure memory module.</div>
+          </div>
+        </div>
+        <div class="tech-step">
+          <div class="step-num">II</div>
+          <div class="step-content">
+            <div class="step-title">Charge & Sync</div>
+            <div class="step-desc">When you place Waveless on its charging cradle, a wired data connection activates automatically. All stored data transfers to your phone app via USB-C — no wireless signal ever broadcast.</div>
+          </div>
+        </div>
+        <div class="tech-step">
+          <div class="step-num">III</div>
+          <div class="step-content">
+            <div class="step-title">Analyze & Insight</div>
+            <div class="step-desc">The Waveless app processes your health trends, sleep patterns, and recovery metrics — entirely offline by default. Cloud sync is opt-in, always end-to-end encrypted.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETHOS -->
+<section class="section-ethos" id="ethos">
+  <div class="ethos-line"></div>
+  <blockquote class="ethos-quote reveal">
+    The most sophisticated technology is the kind you never have to think about — quietly working, never intruding, never radiating into the world uninvited.
+  </blockquote>
+  <p class="ethos-attr reveal">— The Waveless Manifesto</p>
+</section>
+
+<!-- MATERIALS -->
+<section class="section-materials" id="materials">
+  <div class="reveal">
+    <p class="section-label">Craftsmanship</p>
+    <h2 class="section-title">Materials built<br>to <em>outlast</em> everything.</h2>
+  </div>
+  <div class="materials-grid">
+    <div class="material-tile reveal">
+      <div class="material-swatch" style="background: linear-gradient(to right, #3a3a4a, #6a6a7e);"></div>
+      <div class="material-name">Grade 5 Titanium</div>
+      <div class="material-desc">Aircraft-grade titanium for the core structure. Exceptional strength-to-weight ratio with natural biocompatibility.</div>
+      <div class="material-prop">Hypoallergenic · Lightweight</div>
+    </div>
+    <div class="material-tile reveal">
+      <div class="material-swatch" style="background: linear-gradient(to right, #8a7858, #c9a96e, #e8d5a8);"></div>
+      <div class="material-name">18k Gold Plating</div>
+      <div class="material-desc">Physical vapor deposition (PVD) gold coating — far thicker and more durable than traditional electroplating.</div>
+      <div class="material-prop">PVD Process · Fade-Resistant</div>
+    </div>
+    <div class="material-tile reveal">
+      <div class="material-swatch" style="background: linear-gradient(to right, #1a1a1a, #3a3a3a, #6a6a6a);"></div>
+      <div class="material-name">Tungsten Carbide</div>
+      <div class="material-desc">Rated 9.5 on the Mohs scale — virtually scratch-proof. A surface that looks new decades after purchase.</div>
+      <div class="material-prop">Mohs 9.5 · Scratch-Proof</div>
+    </div>
+    <div class="material-tile reveal">
+      <div class="material-swatch" style="background: linear-gradient(to right, #0a2a3a, #1a4a6a, #2a6a8a);"></div>
+      <div class="material-name">Sapphire Crystal</div>
+      <div class="material-desc">Sensor windows are protected by lab-grown sapphire crystal. Optically pure, thermally neutral, impossibly hard.</div>
+      <div class="material-prop">Mohs 9 · Optically Pure</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section-cta" id="waitlist">
+  <div class="cta-bg-ring"></div>
+  <div class="cta-bg-ring"></div>
+  <div class="cta-bg-ring"></div>
+  <p class="cta-eyebrow reveal">Early Access</p>
+  <h2 class="cta-heading reveal">Be first.<br><em>Wear the silence.</em></h2>
+  <p class="cta-sub reveal">Join the Waveless waitlist for early access pricing, exclusive launch updates, and a free engraving on your first ring.</p>
+  <div class="cta-form reveal">
+    <input type="email" class="cta-input" id="ctaEmail" placeholder="your@email.com">
+    <button class="cta-submit" id="ctaBtn" onclick="submitCtaForm()">Reserve Yours</button>
+  </div>
+  <p id="ctaSuccess" style="display:none;margin-top:20px;font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);">You're on the list. We'll be in touch.</p>
+
+  <!-- $1 refundable reservation — the real demand signal. See business/01_DEMAND_VALIDATION.md -->
+  <div class="reveal" style="margin-top:32px;">
+    <div style="font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--mist);margin-bottom:18px;">— or reserve your unit —</div>
+    <button class="cta-submit" id="depositBtn" onclick="goReserve('cta')" style="background:transparent;border:1px solid var(--gold);color:var(--gold);" onmouseover="this.style.background='var(--gold)';this.style.color='#060608';" onmouseout="this.style.background='transparent';this.style.color='var(--gold)';">Lock in your spot — $1 refundable →</button>
+    <p style="margin-top:16px;font-size:0.72rem;color:var(--mist);letter-spacing:0.04em;line-height:1.7;">Founder reservation · early-access price · free engraving · fully refundable</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <img class="footer-logo-mark" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAAC1CAYAAABGbvOlAAA14UlEQVR4nO29eZBlV33n+Tnnru/lXlmLSiotJWEhQI0sJDdGVhshCQS2URBu1jGLscc4MDFu5LAt7IHQmImYaTuCNjGONqAJQxjcyCZMA25ZZjHuRjAguVnFoq0koaVUJVVmVWW+5a7nnPnj3nPffVmZVYlLpXpZPp+KV7m8my/fe3m/9/c7v+2Aw+FwOBwOh8PhcDgcDofD4XA4HA6Hw+FwOBwOx78mfN/H8zwAhBDN5/br9Y5zOBwniZTyhMd4nkcYhscIz/f9U/W0HM8g4sSHOCYBKSXGGIwxSCkRQqC1xhjT3A+VIIUQFEXR3OdwOP6F+L6/oSVcz8ptxmo6HI5N0nYtfd8njuPGAtqb53ljwguCgDiOT8fTdTjOLNrCsuJrEwQBUkqklERR5CzgFsOtAScYa9mKohj7/rZt28zP/dzP8Qu/8AtcfvnlLCws8MADD/DlL3+Z22+/nX379okoisiy7DQ9c4fjDMOmGxYWFszNN99s8jw3w+HQ5HlulpeXTb/fN8YY88UvftFcc801LvricDxThGHYfP62t73N9Pt9MxgMTH+QmGGSmSTNTX+QmCwvzaGlw+aLX/qyAdm4o9ZFtTg3dXJwf4kJxgZY8jxvRPSqV72KOI5RSgFgjGnSEUIIZmZmuPjii3n5K15hbBrCpSMmFyfACcbm/qASo137WTHaKKjFrhV37drFNddcMya89nGOycEJcMLRWiOEwBjDrl27Govo+/6YwKSUlGVJlmUIIdi7d28jOmcBJxcnwAnGuplQiajT6ZAkCUqppirG3jzPa6pghBCcc845Y4l6J8LJxAlwwgnDsBFPURR0u11836csy6b4uu2mWhFu376dKIrMeq6nE+Pk4AQ44WitgUo0RVEQRVETcBFCNOtErXVzrNaabrdLFEVNJY29zzFZOAFOMHZdZ11Jz/PIsoyiKPA8j6Ioxgqy22VpcRw3VTKWtUEbx+nH9axMMFZYZVkSBAFHjx5Fa00QBI0VhFFRtjGGsiwbq+h5HmVZHvN4QBPYcZxenAC3CGtzelXwZfyYtdbNCWzycS7oBNMWUDvhvvaYtZbNWrf1jncu6GThBLhFWE9Qa1MRa79/vMCLs46TgRPghGMtlo1ytsW21pq1gyzGmCZfuN7jOSYDJ8AJpy2YtgU8ngWz1q+dyHdMJk6AW4C2FVxvvdem7X5aF9RZvcnFCXALsVl3cu2a0DG5OAFOOGvdTlv90raKMMrr2U6JoihI07RRqE3Iu4qYycIJcIsghMD3/RN2OGwUFXVMJk6AWwBr8YIgAEaWcKN+PyvAjVxUtyacHJwAtwjGmGPmgK5NR6yXlF977NrvO04vToATzFphhWHYfK8tovUE5QqvtwZOgFsAa73iOB5bB26ElNJ2RazbD+iYHJwAtwBWRJ1Op7GC7Z5AS3ufCNuWtN4ENBeUmRxcN8QEs3aNF0VRYwGr+44VX7tR11m/ycdZwAlmbQXMnj17CIKgqXJpW0L7ted5KKWa/SGUUs3YCmsNnTAnByfACaYtGt/32b59e9MJv5n9/+zPOpdzcnECnHDaa7jzzz8fIcTYmIq1rF0HHu8Yx+nHCXDCaY+luPDCC5tRE20XFI5NO0gpx0ZVOCYTJ8AJp127uWfPnmZ9t3bHpLUlausJ0K39Jg8nwAnGDleSUjIzM2N27tzZfL1RUfVaATrRTTZOgBOMFY+UkksuuYS5ubljRhUerzveDuld+3jOJZ0cnAAnmLa49u7dSxzHY3tDnOhnXC5w8nGJ+AlGa0B4FKXm5a94JQgPpcEgKcpRH+B6ne9BEDA1NTU2lsLOCHUzQScHZwEnmCAMwRi2bdtmfvZnf7YZtDQzM7Opxlpn/SYfJ8AJxors+c9/Ppdcckkz5UyIzXW2u51wJx/3F5pgVFniBwHXXntt4z6GYUiv1x/btnoj1ibinUWcPJwAJ5woisx1111HlmX4vo/v+xRFQRgGJ/zZtVFQi1v/TQ5OgBPOOeecw8UXX0wURQghKIqCIAhQ6sQu6EZpCMfk4AQ4wXi+z2te8xq63W4zD8bulJTn+Ql/vp2GWC9P6Dj9OAFOMEII3vCGNwA0247ZRtvN/rxjsnECPM20E+pxHANV5zvAy1/+cnPppZfS6XQoioLBYEAQBCRJ0vzcehbOzpCpXNVRHtAWcNtjHKcfJ8DTiN3rHapu9zRNiaKIJEmQUvK6170OgOFw2ARgtNb4vr+pfR/altIJbjJxAjyNWLcSIMsygKbL4ZJLLjG/9Eu/RFmWaK3HmmvDMNy0ADeajubc08nACfA0Y4MrUFlEa6ne8pa3MD8/T1EUdDodtNaUZdn0A27Goh1vNKET4GTgakFPI0IIsixrEuZlWRJFETt27DBvetObSNO0GcibZVmzN3ye5xt2uzu2Fs4CnkZsIEUpNeaKvvOd72THjh0EQYDv++R5jhCCOI7RWpOm6aZmwhxvlyS3JpwMnABPI+2u9qIomJmZMXv37jVvectbyLIMKSVBEDRrReuCbkZ8wDE76rZxApwMnAAnAFvX2e/3xTve8Q7m5uaYnp5uoqG2omU4HCKEoNPpbCoI0y7Y3gprPrHBx3UPXO+2BXECPIWsN4czDMPGgkVRBIzycy95yUvMm9/8ZrrdbrPmK4oCrTV5njf5QbtutDvhtj9abNlau3N+7RCnU49c97aRfuQGH8ee6UY/LI75NVuCLfI0tyZaazzPGwuY5Hne5P6syMqyRAjB7//+77N7926Gw2FzvJ0BY+e7WBFtphTt9KPrG+t8HNHWy0Yfx0R4PO/ZtG5bABcFPcXYOZ4A3W7XZFkmbNDFTrEG+J3f+R3zyle+kjzPieO4WrtR7XRrRWxdyvbPHY/J2ap6XHxrn9FGZeWy9X9D+4eNva/larc+n4RXfiKcBTyF2DHyUAkxz3NhhaO1btzLV73qVea9730vSimGw2EjzrUupj2+PXLweBxPfJMhzIq2wTr2WbWtaPuH2rbRAzwEEvCR9U1sgdN78p/hFsZWsVjX0VrCTqfTuKU///M/b97//vc335udnaXX66GUaqKf7XrPdkL+REyEBTzemq29wBO1+MRIkOOy0xvcDKK+SQQSgdhCERknwFOIPfmjKBrb4y/LMpRSXHXVVeZ973sfl19+OSsrK0RRhFKKKIooigIpJWEYNiLsdDpNgfWWEeB6tM1de5On9sf6cytCc0y00wqwrG8aUIDCNPI9cc/k6cYJ8BRiy8zaEco0TdFac/HFF5s//MM/5Prrr6ff7zM7O0ue5wyHw8Ya2taj4XBIv99HSpqC7H9JJcyznYoQgGgHRdb6mhumD+q6VzG6rRvtrL+ujtGM/pVotFsD/mvHis6uA+267TnPeY754Ac/yPXXX0+v12NmZgZjDGVZMj09zcrKSmPpiqLgyJEjLC0tkaZ5szXZZnoCJ9YC2tPOtD6atfmD+qMV6CYim23Bmi3ihToBniTtYuq14x/s191u19hKlksvvdR84AMf4Prrr2/2eej1egghGtcziqImzXD33Xfzx3/8x3zkIx/h4YcfRmvNwsL8WHDHDuGFkbVt7x1oj3u2xWjwMfgI4SGlj5TV52PJOiNBeNXNCrH+nvA6ICIwAVXAXh4jws5UgPQBAV4rLhVGW6NW1gnwJFFKEcdxc4J7nkcYhhhjKIqCqakps7q6Knzf50UvepH58z//c2644QaKomjGx4dhyGAwIEmSsQLte+65hw996EP81V/9FbfffjtLS0skScKRI0dPKKbTb/0kvucjhYcxEq2rQcOmMU2SwA/wvbB2UxV23SaEqX6ulKB8IAQRgIyRMkJQKU56HsmgQJcQRSFKgQwCom6XPFMnXR1zPJf9mXLnXR7wJOh0OiRJQpqmAExNTZnBYCDsrrRxHJvBYCCEEFx66aXmtttu4/zzz2/SDLbbAWB6eroRsO/7PPbYY3z0ox/l9ttvJxkOxYMPPMDy8rKZmpqiLMuxvCCMj6S34ttssOZUUY7lKgVS2P7E+v4yG90rqihm9dw1Rgmq07O2ZLqKINd2H/DwvZCSEuFJslSBCdA5ZMqAjEHlnGwgZu0EgWd6He0s4EmQJAlRFDUBkSRJRNslHQwGAuA3fuM3zDe/+U12795NmqakaTq20aYVrP26KAo+8YlP8MlPfpJkOBTdqSkD8PTTTwM07Ultca0VmtZ6LFnftoinoy5UAMZotFaUKqdUOVEYUC2LNdIYMBopDKGE0NMICgR5fSvxyPHRRNKjGwSoIkWgUWUJBqKoiww6oKhd3ZPDvmdr3+dn0rtwFvAk6Ha7ZjgcCt/3CcOQPK+CJHEck6YpF154ofmjP/oj3vSmN7G6ukqn02lO/sFg0LifWmt6vR6e5zEcDrnjjjv4i7/4C4a1gJMkEUJK+v1+Mx/UsnZtZ79eK8DTgZD1czMGU1siKcET1dq0yCsLaAOaAFSHA5qAbPzx7Ce6QOnq5FVG1zZSkmdDTL22NHXOddJxAjwJhsOhaG+WOT8/b44ePSriODZvfetbefe7383evXtJ05SyLAnDkCRJ6PV67NixgzzP6fV6dDodut0unudx55138oEPfID9+/cL6QUEQUCWpgRhODacd70rMzAWjNlIgM9OQEZjardRSFmlC5RGV4YOhBkVXctKhKYV6ZT1p4EEz6Mexw9KVccZQHrgGVAaFJpOGGCER15Urrd+Bl/iqRpm5QR4EkRR1IiiLEuOHj0qbrjhBnPzzTfzspe9rHETfd9nfn6e1dVVpqenm6CLne8ZBAGe5/Gtb32LD3/4w9x9991CSolWClULqshzBoNBUwlja0Q3oi3A07YbktB1rk5X4qpNmPQg9KHIqu8FHnQ7mPn5KXaftZOzzz6b7dumicOCOKoKEKIoqqKoVBFVhE/UmeG++x/m6//fN/nhfQdEkWejxP0z9RLWjPVor7GfCZwAT4Isy2z6wFx33XW8613v4tprryUIgjpxLpsqFjtKcDgcNoGWoihYXFyk1+vx+OOPc+utt/KpT31KWEFLL6C0TbtC4wcSjEKVJVPdqqJG1A6YTTlUa5/qBNGYJlFdnZF1e5SRrQBhO0ghNzhx62M2Wjqa0d3HBBVqq+Z7MDeDOefsHew9/zzO2rmNc8/bQzcOmO7GRGEAaLQu8aTElwqhB/i+xveCugzP5lQlAo8w8gjMIi++/H/hgX2Pmw9/9FMsH0FMzQbm6GohxnKIxzyz1msyo/tsMbcEpAAhDUJUG+JIA6p2kW3djRmTUF19M/Z7j89JC9BGAmFkEQCuvPJKMzs7i9aa5eVl9u3bJ5IkadZKm8GeiHZN1b6St4uVN0Ii6rKkcQSjtp717q8Oql0OTPM5rauerEX06le/2rz97W/nqquuYnp6mizLyIqcIAxQRR25q+tBbWNtnud0u90menrfffdxyy238A//8A9CSsmoYLvAC/zqcQwUWYonQQiJ0WX1udGoUuP7HkYLVKHwpEdRFKTFcFSrbAAjq1pJY2smTf0aR++Ybr5bd+4J0KbEC8BIgy7NyD80VJ+XVcXLVORTZvUmMnWVyp7zMJdf9lxe+G9ewK6di4TS4EtDGAgCYRAUIBKEVhg0xih0fbL70kcaoKwuQsJQu64lWmhk6bF7xjDIB/zMZWfj/eYv88d/+l9Z7RUijCGzp5mhLsyuL1bUKQ8BwvcxBSAkHuBLjVIl2+Yw/+6qi/l3V11OpxMzPz/P4aWjfO5zX+AHPzrI0goi8CJSJTHNG5yB0HghKFsddwIRnpQApZS0RZVlGb/+679u3vCGN3DZZZcxOztLEATcf//9fPWrXzV/+Zd/yTe+8Y2xddPxsGKzx1qr0W7HsUloe5Lb9ZEtWF5bmGvsv3bgAtG4c00I32iEJ6kWLaNjd+7aZa677jquu+46brzxRuI4bjrabV+fEKJ5fkEQMBwOCcOw6Wq3A3inp6e58847ufnmm7nrrrtE+wIWhiF5ceyFqp1cb74nNPbkat8lhKivxu2zQLT+H32ntZqsH0tjKDFG0+lEJGlWuYudiCLNkHGITvIq4miqtVqZlXjA8y5aNL/4iy9jz54pokjTiTx8KZAmBa2QlIi8JAw8hBUDVhg0FwvPlAgjmioZaTSIKjpqZEmaZczNLuBJSZb3WJid4qIL58y+H6+Ifjp6kaNXbC1dnSP0RRWsEX69MC0xCp73U2ebN7/xVfzUBdNEQYpWBVIO8OfhN9/+73n84JBP/s0XzHd++KSQRATBjEmLofDCCFWWqLIqClCbsDMnJUCbi6qv6OZd73oXN910U9NUmqYpUkouuOACzjvvPHbv3s3NN99sHnjggZ8oDm5PZttNYK2ErYu097cbVYUQ9UV6PEIoxKi7wFpPbQxaHRs1M1ozv7BgLrzwQq644gquvvpqrrjiCs4991y63S6DwQBjTCMa61rargXPlywtLbFz586m1WhxcRGlFCsrK3z605/mfe97H0tLS2J6etr0+31hc4TV65Cg7YlTuV4GiTYCgUShkbI+d6S1ZqZShKjL1apPWyWYtkZyvFi5fidG75YokR4EISRJxsxMx2QZIh+UQAc9AI8OggwPze5tobn2miu4/Kefw7aFiDiCqTjAkxpdlORZgkQTxQHCeKiC2ghJMNVpKJurR/16TXXhtbl73XQI+pVApaAsJFJEROEsu8+a4edfch37Hv47MO2/Z7tv0BZwU/mTAqQ0mFIhgEtfcI75xVdczYsuu5BDTzzA3PZphsmAo72jzC8s0JnyKU2XX33ra8g+9hnzw/sPiKw4IppKHQQYU1nAU+2CVttkhQRBYK699lre+c53sri4yOrqKlEUMTU11YzQ63a73HjjjTz44IP87u/+7qYe3+bH2gKD6kQviqIRJFQpAaWUsGIQQjT9ePa4tbmwthWM45idO3eaiy66iIsvvpjdu3dz5b/9GS666CL27NnT5OtsCsB2rcdxTOAHaFNdiIqiaKxUoTS7du1quuCNMc1672Mf+xh/9md/JpRSVpzCutpaazqdKZIkq6/+dpEVYJCVnRASJSQagxK1Vyg0El2bQY3n2ZxkLURRWXMNxzjnzTpRgD1BlQGVQhhCfzUR4NPxOkg840tNVqyKS/buMT/3khdy+eUXsWtHTJ4vUxRHiPyY1eVDhJ6PJwWekIS+xMegVQFlgTwmiDTe/y4kgK4ttGneBlM/0SCMGQyGlJ6HLlMyHXPBBReSZiUSD2PUmppQXVnZdmG3AV0qQg+Egtf/8iv4Ny84h0NPPsBZi3P0Dh9idjZiprvIcNgnHShCr8OusxZ44+tfxf/5Hz+Kygs0lftPvTbNs/EUykaclABt5QcgbrzxRnPeeeehlGJqaqqZSRLHMUVRcPDgQebn57nxxhv5+Mc/bu677z6xmbVg292yIXa7dvJ9nyAImJ6eNgsLC8zNzZkgCEjTlCRJyIq8qTqJoohut8vU1BTdbpcwDDnvvPPYtm0b5513Hueeey67du1ifn6+iVTCaP3W7mawbUK2STbLsrFGWesSawP9fr9Zq05NTfGFL3yB97znPfzgBz8Q7ddnxw2CzS8mQiBr01RZQSk9tKgCJSUCjUQIgxYKJUHoqhdACIEWEMgAtKwFaS3kKPjQjkyu25lgAygyQlHQkRGFSpCUAgXvedcbzfOeezYL2zxWVw+S9TMW5qfwg3mS/oCd8wuYvFrbSQNGK4pkCGgCz6tMM9aFBkV7WaLxZIEWpr46jAIltbEnDEI6s1MUJmJQGIoy5cDBg3hAEHukqarWjfWi1bSDJHZtXFafBz6ce3Zkzt41jSwPE/sJeghekeEpyJI+WqeE4RTD4YAyS9lzznbO2uWZRx5XIu54JEkJeOgyqN2SkXu9ESclQFvpsWfPHvPqV7+aJEkat87WQ9qZJmeddRZJknDBBRdw9dVXc88992zqd7StlC1oBlhYWDCvf/3rue6663jpS1/K/Px8Y22teJIsbdZk7XCy/ZjneROptL/LCs42xNrZnDCa32nXmLZdyK4fbZDFWrWgdkeNMTz55JPccsst3HrrrcIGrexa2Fq++kJhhsOhEMjaoTHV+SKq3yWkhzIaKQSmdqkRGmQVXDHVCwGlkaJyi6q30NA+GUxbeOu+8dWHTtxBZQoPDXrAQoT5tbe+lisuu5DQH1Bk+8lWC7ZPRygFq8sHEMJnfmYeU+SoogBjEF4d9FIlni8JO37jumtRub7tv7UWGmV7mYS1enLsKff6Q6SM0V5AEEVkvYJPf/bTKCBP7cXdnuK1+NpZfwUyEJjMUGRwxWUvJKDk8NITnLtzDvqKrEyJZIAfe+SrKaHssGv7LL08oJcW/PQLn8f+p35AmiQIKg+lLA2eF6JUxikVIFQn3d69e1lcXKQoCqanp1ldXW2GDQ0GA8qyZHFxsRHk3r17N/XY1u2zJ3G7o/xXf/VXef/7398Mq7Uj++w8lX6/TxhHtQGp14OtOZn2wmCEQNkQfi1GK0hr0Wyfnu/7zM7OIoUkzdIxEbY72O1FIE8z+v0+f/u3f8uf/umf8vDDDzen+8zMjOn1esJ+hCZgI6SUTHWmzXAwFNYMSTmKoqKri0AVGxcI7WGb5kwdeTNG4InxP++YO2aXldZCCBg/WXxCv0OepPiU+MC/vfx888bXvYLtM4ZAPEooMmZmNVEgKYtV8mHOdBgTRF0khiwfIgVIr3pPtTF4srLGSZ6MrUaNACG9xi3WwsMYe/mpOiS0GD11kITdqtsiL3x6g5J7H3yEJw4UQgTgC0GZi9bqT49fbGqnwGivSjeYkpnpaaY6EenAUKYDIi9k184FlpafJFdDzj7vLAZJwaM/fpiFXRcRhz5n796BKuq3U1SWvSjVpjZQrd7lk8CmCc4//3zKsmyKf22topSSqakppJQMBoOmy3uzScz241nxBUHAZZddZn7v936vKWi2v6cdEOlOT40Npm3/zvbOsfa+9tZd9vcGntd0JtgLSJIkTRuRtYztYUlQWdY8z7nj9r/n1ltv5Wtf+1rzp7dtR71eT0gp6fV6wkaR0zSl0+mQZRn9waqQzeXaID2QUlQnNLpKKYg63mKqihAMeLrO8WmBFFW6QdeukFjrdtoePFPrXFhVAkZTFhmSgpmuML/1G2/khc/fzUw3I1s9wHRHI02OynLyXFR5ucDH8z1KlbLS79PtdhG+hzaKvI5ke0GIMpAVOb4XVoUGRoKowvlCWBFKNH4deJFjF4/KoxaVi+lF7H9qmW/cdTd/98XvC0WdAsBGwI8jBFPFaqTxCD04eGAJtGQ6nkGrAf3hKoUnmZ2bBtFh5egAI3127dxDqiVZoRgOUoSBOBYMU0VRZngyQOnNdeSflABt9f7BgwdJkqTJbdlyqSRJqlKqLGssU10xsunHh1H006YhrrzySubm5oDKGtrWHxhfMyqlqoBDa5xf+9j23M52T137tdkoq61qaY8abG8VZitier0et99+O5/4xCe483985RgHzxjTrPWscNtrYeue1itDDNDtVNPU8mwAOseTVKHx+nnrPMOLumRphickcRjx9P4DLD31NEHgkRVFs+YTshahkmA8ZBChC4WUAoSuo8Ea3zNIlfOK615kXnn9z7BjwcMTT2OKlOm4gKLEEyGmlEgZ4UcepckpihRFStDV6ChH6WrNKuIQoz1yLTEmgHCGXHnkhUAriRFVy5FWgmGak2UFw6Sk1+/T7/fJVb2TlDTkaUaWZRx44gDLy0d48qnDHF5FlICRPnhRFT1WKVCuLwMDwu9gClGFeYzHd799P+lrbyD2IzoRhFM5pkhJ0hwjBZ7fxXgRpYqRcgZPTvHt7/wIP4A8r87VMKyCP0qfeP0HJylAa2HuueceDh8+3GybJaVsio97vV6zqYjWmn6/z2c+85mxBP5xn2Cd17MuHlQnrLWKdr6KdfuUUuR5jkoUflhFAdtrv7XrwbYFbI+OEEI0yf8mrVAHc2zwRQjB4cOHm1zf5z//eT72sY9x1113CX2ShdDtFdswGQqAQf8Iq0cO4QeSxcVFBoMBoecjhCIkJ4gkvgwZ9nvsf/THHDmyTF6k449rHQFRRSF0oeh2p8xw2BMCRSA0xmgC4O1vv9684JJzOP+cDj4DVJZiygStFIGQDAcZU91Z8kKxemRA0JXggUIgwy5p6aONhxE+pvTIcyhKgSHA87s8sX+JQ0srPProUzz+2FM8vXSEfj8lSxGFAc8TFMqM57Nr11FQlbApNQp1lASg/Up8ogq6HCOBlgdgipIwmDFFXopcF6z2cnHf/Y+bF//MefT6T9AJJJ6MkFEMCArlkeUeJQHK8zi0MuTgUytkBcigetg8T7HNwetkto7hpBPxNqd12223cdNNNxHHcROdzLJsrM/N8zw+97nP8dhjj21KfDCKQrYbXg8fPtxYnHbxcZ7njcsaxzFZkSO0xtTisrQfz9IWXjOJrN6bwVpNY0wzJMm63I888gif/exn+eQnP8njjz0mAKI4Jqu6T0/m7cUAvicQwuAJ+NH3v8Xjj97LT1/6ArLVg0x3O2A0Ik2QRY7wQkw25IEffZ9//OJ/Y9A/un7WXVObQkEcd0w6HAoPTUBJN/aNFJrfeufruPg5U3TilDI7iCoLAmMQKgIMfhwRzVUXKb8TMTfXYZDlhFFEEAQsHekTdbZRFIJSGYrc8PTSCt///v18439+l8efGK0625U4VSADDJJC2fs1BlHJyejm5ZTKviSvDkiJeilcv0il2w9OE1AdJUUpikKARxTMmLRIxH/5m9s5/4JfY2Z6npX0MLPTMYEXkiYlygT4nRkwMWkq+Zu//WuWj1SBVk1Vs9GIe5N/+pMSoLUivV5PfPCDHzQXXHABN9xwQ2MpbKLc1j/ecccd/MEf/AGDwUDYUP1xn1xr7ReGYXPS//CHP+TrX/86V199dbOeE0I01SZJkrC8vMzM3OxYQKX9nOHYvRPsMdbaxnHcjBa0Y+SffPJJ7r77br73ve/x2c9+loceekjkWYbn+5Xw0pQsTRFSblzmtmkkpbJ5MOgdPcRTTzyMuORcdNJn5UhKVEdSpQhBehjjQX6E7QsxQmrQ4Pujk7U5e3V12hRpIqpeu4IA8Ewp/o/3vsucf14Xox9DmB5KSXx8Im8KgUEVBXmhGQxXmZqepl8kqMIj6i5yZKDoDUqmZs+ln4bc8/37+MbX7+b+fQfo9RGjvnf7dAQQVOV1xg4YbJ5ktZKTXtPWRJ2GqYKiXnU90Rpt7NpVgVeCJ6pcfn1sE/QdpRORnkSrkm40ZXpZX3SIefzQQPzR//1n5j/89ts4a+c8mQgYZoos95iZ3k4QzvKjex/ia1//Fnd96yGhgDAOSeq6tzDyUKVisw7QT1SRsu4D1JFHu5HIO97xDvPiF7+Yyy67jH6/j9aahx56iK985Svcdtttws48yTaRqGyXrLVdQYDXvva15j3veQ8XXnghCwsLJEnS7IXg+z6e5zUjHtouZzsw0x6ca39GKdWMh9h/4EkOHTrEgw8+yHe/+12+/e1vs2/fPmwPYFmWYAxenW4YFU7b0o2TEWAVfIi7AdkwYXFWmt9+59v5qb1nYcoeOhvge4apOKotsibJNEEY43kR+w8NuOVPbuVIXwnhQals7WNdYGJ8ZB2iCSmJfdi5TZp3//bbOW/PLEmyn1AeIY4lQnUQKiSQU6AgL4ZooQg7YKTA+CFHezm9YUR3eg9Hjhr++X/+kDu+8E8kaS6yvGzcRAMgfIQc7Vmhtca0ZAe2UEBUuTuxQTF4u57aftJOGdp6VVtx04R+q7W1HwaUOUDVVK3VEI8CCezcgXnZS6/g+c97Ls/Z+xyMggNPLnHffY9w1z9/h3sfOijwIFPj0WXPl6iyDnhtIhB6UgK0IfuyLGmH0617Nzc3Z1ZWVoQ9du2A2s1gRdIe525nrVx55ZW89KUv5SUveQk7duxo+uriOCYIguZ52HVhlmVVgj7LKMuS5eVl+v0+R44cYXl5mUOHDrF//34ee+wxlpaWeOyJx0VRB0i8qunW5Hku1DrPX9TRXfs6bZf2Sby7gFeJxlTW6Q9ueoN57kW76fo5ISlRAEbVW1srQ1FKpBcivIB+OcW7//f/zMGVUhgzqv4YCbAaYzsXhSbNhuLy5+8y7/rNN9EJB8wvwNFDjxKQ0+108ExInmk8GSOlj8KANBRGkxlDaUKCziIHn875u7+/kzu/eq/INbRH5gK1G9l+fSMFeV4ds9TlWFTZGDVy7Ww9tU0PlrVRpLrm2XlPitFDV3qruieqqLLCBmaEV/UYVuMrDKCYm+uY1dWesBFmSfXRl+BJKMvRFFJjf1fdTSF8H1PmVfFCy3s7HicdhLH0ej2xbds2c/jwYWFTDSsrK6KdS7Phdrvv3WasIIzWmjbnBlURwFe+8hW++tWvNlUoi4uLZtu2bU3gRiKagIkdBTEcDsmyTFRRqhG2INsYg9KqKkkOfGzsXpUlSVnaaE7zBjcXodr6aaXwNrl/3wkRVQVHGErINYeePsALLtrO7JSk6A/wjSHLq4lqoR/Qne0gPEmv3ydLkzriOX6NtVdlIQyBMAyzobjkgkXzK296DdPdkjJfZrAyYGEuJlBzhHX1iwlSjOhTGoHSPtAl7u5C5xGPP7bEF778ef771x6sIpECSgFBYChzgxGVGy39OuWhDAiF8HxMPa1pbd5MiOq9rP849ZOnOvttysUL0WVtJw2YsmzSmmPlZu0pbO1LQF1rj0npzM2ZpNcTK72emNnWMf2VRIShR55WNaIIqBs9MEDQ8UnTsnpI3wdjqsLuuq5VleKY37ceJ32maK2bpPvhw4ebmSg2SmgLpG2BsbWUmxWffRxLuwHWYl3TpaUlcejQoeqF+T5tS9XuihCiGhDUbkcyGEo1/piqKEEKvPZjWSteFM33tVL49XtgxfqMYDR4gizXxJLKuoceK4cPsDAjKfM+fkCV/FU5ZVIg/BiBJu7MVA1t9euWsr7alwASIUFpxQt+aqf5D+/8FbbPCMr0IIvzMf3BEUwhSIeGjBItcrxAIoOIUktKFSKCeR59uuAf/+nrfOm/f5uVIcL3AQOlrnSWF9Wvl3WzgSpHyXA/jCjz/NhohU2Qt9ZtUtSpylYoVEqfstS1xjy8Or2iURhtRi1TY4yLoazL0IQvSXorAj9ECEPvSCIQkCWmFpQgU6oqhZcSbRRpWuLHAWWhqfzYuuTPVO6uOYHwLM/IpXrtTq+WdpTRFlRbN/UnYW1bUlt8600GW3sMwFhAZDMhKnuMNihdjn3fPpbt9wMo8xO3V/1k1KGKesBQqRV5VgWHpiMfVfTRUiClR6GrmZoeAlG7Q2mu0MJvXFip6j+2iNB4KD1kx3Zh/tdfv5Hd2zQiPYpfJsjEZyFeIEkHxB0YJgky6FLKDknqk9GlpMO+h5/i//nz/8IwQ6Q5lYVQ1fgIKSqx24ijXuetKddegM2aj+1vjSI2zT1aF9gGYoWutdU66XX7eH1MSqIJ5BgwRX1PkY9+vRk9nq3X0YBueU5lOl67WtEW3ynOAzpOLU1wwdRrF1M3qNaRhaqApWpRkhhkUwtaVY5UFz3dPFboheSqABQ757vmpt9+I2fv7NBbeYJtHZ9oOqLIU5I0Ie6EDNOkqrMMp5HeDFkhSFWX/3rHl7nji98SIhhZuwbTSu+sd507mXXxCSzaxsfr8S9P+Lib/B3r/tzmLJ/FCfAMRRiN59nNSkAJSFXObDc26TAVb3/Ta3j+3p1EXp+s8NFCUyLxQx+dAdowt+1snl7uk/ZKlF/S6wk+9NGP8P37V0QpwKxpZqmWy6dp/swWxQnwTKUe3SA9g64T2oEHg2Eq3vzvrzIvedEFDJceRUwZZqZismTIIE+Z78TEQUhewlNLfTozO1lNDE8dSvjIx/6aB36cV/33srJ+o99X5d10K1HuODFOgGco0oAnDVqZKgoiDLlS/PRzZ83Lr3khZE+ye8GnPzhCnpXggfQFgzwl1gYhYxAzrGQhh48m/Mf/9HGWVxBhBGUGpaqjiq3KE9Oq9K4mzpzeuaRbATcZ+4xFowrTdEugFNsXhPmt33wLKj3ITFznEqXCKIUxGj/0KbWuipTlFEF3J48d6PP77/t/xaGVqoplkIGWPn4QV/MF7QTquuignQd3lvDEOAGewWQFzM9PGXTJdCh46xtezbYZ2LktIvJyjiwfJPAkgajGMkgpMdJHRnP0s4Dv3vsot/xfHxUiAhFUGQwvjBEyoCyqoXxNzqDBVpo467cZnADPWCTdruDo0YGIBdxwzVXm+c85h66XY8oBSdJjenqG0AtJh0MoFVEQkZeCXhZyeCj5yF/8NdG0b1YSSAvAC8hzNcrnGVPnCKpyMSH02FQ2x4lxApxgZJPbrSyMLTxvb9DZrm1tf40nKZVpSqlufPnV7J4NIF9lejqm1AZlPAaJYjqepuNHLD+9ytTUDh4/lHLLn9zK/iXE8tGyGgwhQCnDePe8LU0ZhfldAPQnwwVhJphjikR+AvMiDUShj0fJH970a6bj5ciyR5aukEhBpzuDLiOKsiAMQlSpieNpjqwovvBP/8zBw4hy7Ne1h6m0xNcuE1v7/Df9bP/14izgGYoQhtXDpXju3gVz7llTTAUpvhky06k2xUxyzTBXTM9tZ5BoEF0UXb71vX3c/uUfiLzp31n7yFZ8tv2H8eoV8ZOmov914wS4hWlPyW43GAsh8CTMdjBv+5VfZjou2bEYE3gKjKp3auqikQyyknB6G4PCZ9+Pl/nEp/4HhQBRTxMYVTfbL1rrvo2eF876bRYnwC1E2wVduyfg2uN8NC96wQ4WZwzduGT/k/vIyyHKlAz6fYosJ/IDsrykMCED1eGjt93BkQEijH1M2apzXE9Rx1VZu/vAcTzcGnCCGZtgtumfqQM2UvOKa36Wrl/geTlhV4AnmJmaZW5GMkwKclUwOz/PwSMZX/rqPdz3aF+YwKsS8xus7Y55Orbssznebx3lUhEnwl2iJhxr6I6nw/X2MfeE4azFaXbOBSAzpuciDq+usP/AAYa9PmU6wJeGYTbk4See4pOf+bqI5xZMob2xXzZqq6v2U2rbtrGTx1AXjQtG+yS40+tEOAu4hWj6yc3IslRbedUNc0IhjAdSIwzMzkQM0yPIULH09Crn7N4NhWLY6+MFMUp4HDqc8Pf/+FVkDKurQ4EfgsxHja9jVI02o61i1rL2Oy4ccyKcACcYgw2uVDNMwtBHlwVhx0erBON51ZgHI/CFqNuRNFJXQknKkqDrk/Vzts3soLe0QhAEBHGHnJDVrMMjTy7zre8siVJUOw5RZhDVT6Bpgh0Xkq5nqoxPNGsfZ+91AjwRToBbCIkBoccHHTS7u9ZzSYxG4lXTLISmLDXTU1P0jx5lbmYajSFTMNSCtIy4/fN31ju91jWdUtitX9fQanxe8/HYY5zwNotz0s8A1tuzvFqBCXReIKXACF3PzPTICoEXzPGd79/Lvff3RDUbpWWxrIfrcgmnHCfAMxAblPERSGVIBj22bdtGrz8kUwIlY5SJ+W+3f60ydhLAEHYi0NU0N+lqOp8VnAC3MMfrPJcIPAOBFOgiJwp8SmMojU8YL/LdH/6Y/U8h4ilZDe0V1ZbUdpqtFO7UeDZwa8AtznHHP2hDFAQIqegN+sTTM5SiQ1J4fPFLX6cEkoFu9r8s0mE131SBJAA2N7nO8S/HXebOINoTwKUBowqCem++JCvwwykKHXDfA09yz73LIgzDZmguspoDWDVZVJO23elx6nHv8BbmuNZPaHRZ4AtZ7XHoR2RKkuSCH9z3KIWBQa6JO9P1jEVT7+ij8VsbZTpOLU6AE0w1ZcwgWhvL2K0ANtpirS3KThiRJAlT0/MM0xIhuyg6fOmf7hZS+hg80iRrwi12LnG1uaQ7NZ4N3BrwDKY0JaXWUGoWd57Njw/0+eb396M0ZBrGRqfbulPjsg/PJu4ydwajMUjfI1MCIzvkyudr3/g2aTk6YixpbsZ/2nHqcQI8Q9GAQhF0YhQeTy31wJvm0ccPi1KDEHanILVOaYvr6Hu2cAI8UxEa40EpDPgdklzww/seIavb/Dy/GilR75BejS4E2nvoOSt46nECPEOpuoMEgyxHejFxvMCXvvQVdL2PiSqLZoanvQl7OgiqTTFdNcwpxwnwTEYalNFofAZJySOProhCQ+hJjFlnG732HnpOfM8KToATzXp7Mrd3npPN940Ydxm1kBjhIYOYUnvsf/LQaJ90X9THjC//ZON2SrcEfJZwApxgjK0Rs3uk+5VAqvmcPhgPEGhhQBQgymqDSmMwWpKVIIIuSSq5//5H662gfdJc1VubNWGYWnq1AI2sRksYd3qcatw7PNGMLFxlvkwze0W3/3S19TPC1J/XwpUhSnnkhWbfgz+mNFAqPe531kK0j9vaR/iUvjJHhRPgGYzvV7NZ0jRn3yNPCNunHoZ1823bzTwmB+h80GcDVwlzhmKQaANKw1OHlkkLG3QRY9t6O04vzgKeweRltVf8gw88XE9pkQhPUhbHWjfncJ4enAU8Y5EIJNr43P/gPqAepmS112xAv5H4XCL+2cBZwDMVIzD4aHwOHFwdbati3c9m2vx68zud8J4tnADPUIyAvNCUSrLaryrNbPOtF7BmaLUbonu6cO/6hCOkrPZCgWoHW2PwPG8TgRRJGM9y4MBhoFr/aYBjdi9qbzvWxlnBZwO3BtzCGGO37jRjowkNBqMFRWnY9/Dj5KYSYL2FZ3uwdouxaaOOZwknwC3M8QSohCDL4bvf+1FT8SIQo+yeRzV+fiNaQRrHqcMJcAsjhABRCUsIgahLW6qvPbTxeOiRlbrTqBafrEvbGnHZnoh6m2knvGcVtwY8g1FKkGYgpT8qXRPrVMGsxSUFnzWcALcwdjDTujckg2FSdTnI1nZhWq/zV3enwenCvfNbGLvu2+i2stJD+pCVJQaJDAI2Mn3SnQqnBfeuTzTrRyUNshq8WwtN6JbwtEAZQYnHai9DSPsoJVHgGYy2EZmx36M3HM7kOJW4IMxEozG61Z0uKjfSGFO5mbU7aee6SFm1IGntkSvDU8t9lPHqFl5Nnum6ExekJ9Cmio+adlZ+473HHKcAJ8AJpglINnvF2wG91UcpJQhTxz2rg7QxaA3KeKysDiiVbUICrUdDP4WxU9Fc7u904gS4hWhPw7Zf2zSEFVZ7SvbS0tJYxUx7arZrSZoM3BpwiyDG1mzr+YejP6UV6tLSUvP12JF1SZvj9OMEuEUQYtwCGhQGjTFqTExCVHNiAFZXV4HaVWUkxLWCdJw+nAAnnLZWhBi3WhtZsSoP6JEmVdDFCW9ycWvALcJ62qksmx6tAY3EIDBaoLWhKCrR2fWeE+Dk4QQ48awtztRNLWflkkpoWUJTR0GNMSjFWJG2E+Dk4VzQiUY26zdd5+6sRZMSlCowxlCWVVuDMQYpJUEQkCQZeo2Hao9Tat1+JMdpwAlwq9GagF1ZtHH30tT7/rko59bACXArcBzPcTw3WP05nfi2Dk6AWxbdioq2k+qyCsZot97bCjgBbincvn1nGk6AWxWh13E17Z9TuIjnFsEJcIvTTjNYnPi2Di4POMFUbUQtMRkPTYgmrMKdRiHqgYNG+yghMSJE44MwrqNoC+As4CQjqglndtexg08dJS9CtOliiBGlrmZfC0FW5ERT28hMxFAFHFnN3EpxC+AEOKkIQAhEnYjvdOAvP/6PotABfjRPpkP8oEOaFhjhgxczyKGXCcKpBb521zdP7/N3bAonwEnGmGqamYB+Uo3xfOpwn8PDgkJ26Rc+ItqG7CwyyCWF6BBNb2P5aMKXv3KvcC7o5OMEONFIPC+othard43+z7d+ggNLCQQLiM4OVouA1cxnfudFHB0Ynji4wp/8pw8RRC5ZsRVw4bKJRdYzYCDsdMiTAUJoZqcEKjfc9L+9wZy7e5Gzds5z+PBhDh/p4XkzvPeWD4tSQK7cPrdbASfAicXuWFT9iTqz0ybprwqMotuBMoOzd0mza3GeMAw5dGiZx58ohB9V7qoXeOSFK7p2OP6FSMAnjqbxo2kQQXWTkqAbgoCZKfAFhEAsq5xSUC0Z8f3w9D59x6ZwFnCC8WWA0lU+TwYhuiwg8CvzR90TCIRe1RKoVTXnTMoIpe3EM7cSnGScACcUu2UKgLLuqK1wEfWoQTMS4QjZbMTpBDj5uEqYCaaZx4uugym1sEz9uYuwbHmcACeYZht3QI1ZM9l8HHUCtofL6zUfHZOKE+AEs66MBLXrKRFo1m6rYmiNsncWcuJxApxgxrZpEIwv9urBTOtWUrSPcyKcaFwlzIRShVlktW3KWvGNoZv/x6yfC69tCZwAJxYbzWw5KScSl1hzc0w8ToCTTmtXpPW2DjsmzLLemBjHxOKukxON3dd9jZrWrOvGRve69Z/D4XA4HA6Hw+HYmP8feSYewaN4sEwAAAAASUVORK5CYII=" alt="Logo" style="width:54px;height:36px;object-fit:contain;">
+        Wave<span>less</span>
+      </div>
+      <p class="footer-tagline">The world's first zero-wireless premium smart ring. Built for those who value their health data as much as their health.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Products</div>
+      <ul class="footer-links">
+        <li><a href="#">Waveless Void</a></li>
+        <li><a href="#">Waveless Aurum</a></li>
+        <li><a href="#">Waveless Lumen</a></li>
+        <li><a href="#">Charging Cradle</a></li>
+        <li><a href="#">Accessories</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links">
+        <li><a href="#">About</a></li>
+        <li><a href="#">Technology</a></li>
+        <li><a href="#">Sustainability</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Support</div>
+      <ul class="footer-links">
+        <li><a href="#">Sizing Guide</a></li>
+        <li><a href="#">Warranty</a></li>
+        <li><a href="#">Repairs</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2025 Waveless. All rights reserved.</p>
+    <p class="footer-tagline-bottom">Zero Emissions · Maximum Intelligence</p>
+  </div>
+</footer>
+
+<!-- Three.js 3D Ring -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function() {
+  const canvas = document.getElementById('ringCanvas');
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    alpha: true,
+  });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(600, 600);
+  renderer.setClearColor(0x000000, 0);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  camera.position.set(0, 1.2, 4.5);
+  camera.lookAt(0, 0, 0);
+
+  // --- Main ring (torus) ---
+  const ringGeo = new THREE.TorusGeometry(1.35, 0.22, 64, 180);
+  const ringMat = new THREE.MeshStandardMaterial({
+    color: 0xc9a96e,
+    metalness: 1.0,
+    roughness: 0.12,
+    envMapIntensity: 1.4,
+  });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  scene.add(ring);
+
+  // --- Inner subtle groove ring ---
+  const grooveGeo = new THREE.TorusGeometry(1.35, 0.19, 64, 180);
+  const grooveMat = new THREE.MeshStandardMaterial({
+    color: 0x8a6a3a,
+    metalness: 1.0,
+    roughness: 0.25,
+  });
+  const groove = new THREE.Mesh(grooveGeo, grooveMat);
+  scene.add(groove);
+
+  // Sensor removed per design update
+
+  // --- Connector port (small gold bar at bottom) ---
+  const portGeo = new THREE.BoxGeometry(0.18, 0.05, 0.06);
+  const portMat = new THREE.MeshStandardMaterial({
+    color: 0xe8d5a8,
+    metalness: 1.0,
+    roughness: 0.08,
+  });
+  const port = new THREE.Mesh(portGeo, portMat);
+  port.position.set(0, -1.35, 0.22);
+  scene.add(port);
+
+  // --- Orbit particles (floating dust) ---
+  const particleCount = 120;
+  const particlePositions = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const radius = 1.55 + (Math.random() - 0.5) * 0.6;
+    particlePositions[i * 3]     = Math.cos(angle) * radius;
+    particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 0.5;
+    particlePositions[i * 3 + 2] = Math.sin(angle) * radius;
+  }
+  const particleGeo = new THREE.BufferGeometry();
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+  const particleMat = new THREE.PointsMaterial({
+    color: 0xc9a96e,
+    size: 0.012,
+    transparent: true,
+    opacity: 0.55,
+    sizeAttenuation: true,
+  });
+  const particles = new THREE.Points(particleGeo, particleMat);
+  scene.add(particles);
+
+  // --- Lighting ---
+  // Key light — warm top-left
+  const keyLight = new THREE.DirectionalLight(0xfff0d0, 2.2);
+  keyLight.position.set(-3, 4, 3);
+  scene.add(keyLight);
+
+  // Fill light — cool blue-right
+  const fillLight = new THREE.DirectionalLight(0x8ab4d0, 0.8);
+  fillLight.position.set(4, 0, 2);
+  scene.add(fillLight);
+
+  // Rim light — bottom edge pop
+  const rimLight = new THREE.DirectionalLight(0xe8d5a8, 1.1);
+  rimLight.position.set(0, -4, -2);
+  scene.add(rimLight);
+
+  // Ambient
+  scene.add(new THREE.AmbientLight(0x1a1510, 0.9));
+
+  // Fake env-map via a simple PMREMGenerator approach using a CubeCamera would be complex;
+  // instead boost with a second point light for specular hotspot
+  const hotspot = new THREE.PointLight(0xffe8b0, 2.5, 10);
+  hotspot.position.set(-1.5, 2.5, 2.5);
+  scene.add(hotspot);
+
+  // --- Animation state ---
+  let mouseXNorm = 0, mouseYNorm = 0;
+  let targetRotX = 0.38, targetRotY = 0;
+  let currentRotX = 0.38, currentRotY = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    mouseXNorm = (e.clientX / window.innerWidth  - 0.5) * 2;
+    mouseYNorm = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  // Slow continuous Y rotation + mouse parallax
+  let autoAngle = 0;
+  const clock = new THREE.Clock();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const elapsed = clock.getElapsedTime();
+
+    // Auto-rotate
+    autoAngle += 0.003;
+
+    // Mouse influence (subtle)
+    targetRotX = 0.38 + mouseYNorm * 0.15;
+    targetRotY = autoAngle + mouseXNorm * 0.18;
+
+    // Smooth damp
+    currentRotX += (targetRotX - currentRotX) * 0.04;
+    currentRotY += (targetRotY - currentRotY) * 0.04;
+
+    ring.rotation.x = currentRotX;
+    ring.rotation.y = currentRotY;
+    groove.rotation.x = currentRotX;
+    groove.rotation.y = currentRotY;
+
+    // Port follows the ring's world transform
+    const pPos = new THREE.Vector3(0, -1.35, 0.22).applyEuler(new THREE.Euler(currentRotX, currentRotY, 0));
+    port.position.copy(pPos);
+    port.rotation.y = currentRotY;
+
+    // Slowly orbit particles
+    particles.rotation.y = elapsed * 0.06;
+    particles.rotation.x = Math.sin(elapsed * 0.07) * 0.12;
+
+    // Pulse hotspot
+    hotspot.intensity = 2.2 + Math.sin(elapsed * 1.1) * 0.4;
+
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+</script>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursorRing');
+  let mouseX = 0, mouseY = 0;
+  let ringX = 0, ringY = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
+  });
+
+  function animateCursorRing() {
+    ringX += (mouseX - ringX) * 0.12;
+    ringY += (mouseY - ringY) * 0.12;
+    cursorRing.style.left = ringX + 'px';
+    cursorRing.style.top = ringY + 'px';
+    requestAnimationFrame(animateCursorRing);
+  }
+  animateCursorRing();
+
+  // Hover effects for cursor
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursorRing.style.width = '60px';
+      cursorRing.style.height = '60px';
+      cursorRing.style.borderColor = 'rgba(201,169,110,0.7)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursorRing.style.width = '36px';
+      cursorRing.style.height = '36px';
+      cursorRing.style.borderColor = 'rgba(201,169,110,0.4)';
+    });
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // Stagger grid children
+  document.querySelectorAll('.features-grid, .products-grid, .materials-grid').forEach(grid => {
+    grid.querySelectorAll('.reveal').forEach((el, i) => {
+      el.style.transitionDelay = (i * 0.1) + 's';
+    });
+  });
+</script>
+
+<!-- RESERVATION MODAL -->
+<div id="reserveModal" style="
+  display:none;
+  position:fixed;inset:0;z-index:9000;
+  background:rgba(4,4,6,0.85);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  justify-content:center;align-items:center;
+">
+  <div id="reserveBox" style="
+    background:#0d0d12;
+    border:1px solid rgba(201,169,110,0.18);
+    max-width:460px;width:90%;
+    padding:52px 48px;
+    position:relative;
+    font-family:'Jost',sans-serif;
+  ">
+    <!-- Close -->
+    <button onclick="closeReserve()" style="
+      position:absolute;top:20px;right:24px;
+      background:none;border:none;
+      color:rgba(168,170,184,0.5);
+      font-size:1.2rem;cursor:none;
+      line-height:1;
+    ">✕</button>
+
+    <!-- Form state -->
+    <div id="reserveForm">
+      <p style="font-size:0.6rem;letter-spacing:0.35em;text-transform:uppercase;color:#c9a96e;margin-bottom:16px;">Early Access</p>
+      <h2 id="reserveTitle" style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:#f0f1f5;line-height:1.2;margin-bottom:10px;">Reserve your ring.</h2>
+      <p style="font-size:0.75rem;color:#a8aab8;line-height:1.8;margin-bottom:36px;">Lock in your founder reservation — early-access price, free engraving, fully refundable. Or just join the free waitlist below.</p>
+
+      <label style="font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#a8aab8;display:block;margin-bottom:8px;">Email Address</label>
+      <input id="reserveEmail" type="email" placeholder="you@example.com" style="
+        width:100%;box-sizing:border-box;
+        background:rgba(255,255,255,0.04);
+        border:1px solid rgba(255,255,255,0.1);
+        color:#f0f1f5;
+        font-family:'Jost',sans-serif;
+        font-size:0.85rem;
+        padding:14px 16px;
+        outline:none;
+        margin-bottom:24px;
+        transition:border-color 0.3s;
+      " onfocus="this.style.borderColor='rgba(201,169,110,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"/>
+
+      <button onclick="submitReserve()" style="
+        width:100%;
+        background:#c9a96e;
+        color:#060608;
+        border:none;
+        font-family:'Jost',sans-serif;
+        font-size:0.65rem;
+        letter-spacing:0.25em;
+        text-transform:uppercase;
+        padding:16px;
+        cursor:none;
+        transition:background 0.3s;
+      " onmouseover="this.style.background='#e8d5a8'" onmouseout="this.style.background='#c9a96e'">Reserve for $1 — refundable →</button>
+
+      <p style="font-size:0.6rem;color:rgba(168,170,184,0.4);text-align:center;margin-top:16px;letter-spacing:0.05em;">Fully refundable · locks in your early-access price &amp; spot in line.</p>
+    </div>
+
+    <!-- Thank you state -->
+    <div id="reserveThankYou" style="display:none;text-align:center;">
+      <div style="width:48px;height:48px;border:1px solid rgba(201,169,110,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 28px;font-size:1.2rem;color:#c9a96e;">✓</div>
+      <p style="font-size:0.6rem;letter-spacing:0.35em;text-transform:uppercase;color:#c9a96e;margin-bottom:14px;">Almost there</p>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:#f0f1f5;line-height:1.25;margin-bottom:14px;">Complete your reservation.</h2>
+      <p style="font-size:0.78rem;color:#a8aab8;line-height:1.9;margin-bottom:32px;">We've saved your spot for <span id="confirmedEmail" style="color:#f0f1f5;"></span>. A secure $1 reservation page has opened in a new tab — finish there to lock in your early-access price. Fully refundable, anytime.</p>
+      <p style="font-size:0.6rem;color:rgba(168,170,184,0.35);letter-spacing:0.05em;">Sent from <span style="color:rgba(201,169,110,0.5);">noreply@waveless.com</span></p>
+      <button onclick="closeReserve()" style="
+        margin-top:32px;
+        background:none;
+        border:1px solid rgba(201,169,110,0.3);
+        color:#c9a96e;
+        font-family:'Jost',sans-serif;
+        font-size:0.6rem;
+        letter-spacing:0.2em;
+        text-transform:uppercase;
+        padding:12px 32px;
+        cursor:none;
+        transition:all 0.3s;
+      " onmouseover="this.style.background='rgba(201,169,110,0.08)'" onmouseout="this.style.background='none'">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── EmailJS config ──────────────────────────────────────────────────
+  // Paste your three IDs here after setting up emailjs.com (see guide)
+  const EJS_SERVICE  = 'service_0f0gckn';   // e.g. 'service_ab12cd3'
+  const EJS_TEMPLATE = 'template_ersfnn8';  // e.g. 'template_xy98zw1'
+
+  // ── Stripe $1 reservation link ──────────────────────────────────────
+  // 1. In your Stripe Dashboard: Payment Links → create a $1.00 link
+  //    ("Waveless Void — Founder Reservation"). Turn ON: collect email,
+  //    collect shipping address, and add a custom field "Ring size".
+  // 2. Paste the URL below (looks like https://buy.stripe.com/xxxxxxxx).
+  //    Until you paste it, the buttons show a friendly "coming soon" note
+  //    instead of breaking. See business/01_DEMAND_VALIDATION.md.
+  const STRIPE_RESERVE_URL = '';  // <-- PASTE YOUR STRIPE PAYMENT LINK HERE
+
+  // Sends the visitor to the Stripe reservation page (+ analytics ping).
+  // `source` is just a label so you can see which button converts.
+  function goReserve(source) {
+    if (window.gtag) gtag('event', 'reservation_click', { source: source || 'unknown', value: 1 });
+    if (!STRIPE_RESERVE_URL) {
+      alert("Reservations open in just a moment — please join the free waitlist above and we'll email you the instant your spot is ready.");
+      return;
+    }
+    window.open(STRIPE_RESERVE_URL, '_blank', 'noopener');
+  }
+
+  // ── Main CTA form (hero waitlist section) ───────────────────────────
+  function submitCtaForm() {
+    const input = document.getElementById('ctaEmail');
+    const btn   = document.getElementById('ctaBtn');
+    const email = input.value.trim();
+
+    if (!email || !email.includes('@')) {
+      input.style.borderColor = 'rgba(220,80,80,0.6)';
+      return;
+    }
+
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    emailjs.send(EJS_SERVICE, EJS_TEMPLATE, {
+      user_email:   email,
+      product_name: 'Waitlist (main form)',
+      time:         new Date().toLocaleString()
+    }).then(function() {
+      input.style.display = 'none';
+      btn.style.display   = 'none';
+      document.getElementById('ctaSuccess').style.display = 'block';
+    }).catch(function(err) {
+      btn.textContent  = 'Reserve Yours';
+      btn.disabled     = false;
+      input.style.borderColor = 'rgba(220,80,80,0.6)';
+      console.error('EmailJS error:', err);
+      alert('Something went wrong. Please try again or email us directly.');
+    });
+  }
+
+  // Allow pressing Enter in the main CTA input
+  document.addEventListener('DOMContentLoaded', function() {
+    const ctaInput = document.getElementById('ctaEmail');
+    if (ctaInput) {
+      ctaInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') submitCtaForm();
+      });
+    }
+  });
+
+  // ── Product reserve modal ────────────────────────────────────────────
+  function openReserve(productName) {
+    currentProduct = productName;
+    document.getElementById('reserveTitle').textContent = 'Reserve ' + productName + '.';
+    document.getElementById('reserveEmail').value = '';
+    document.getElementById('reserveForm').style.display    = 'block';
+    document.getElementById('reserveThankYou').style.display = 'none';
+    const modal = document.getElementById('reserveModal');
+    modal.style.display = 'flex';
+    setTimeout(() => { modal.style.opacity = '1'; }, 10);
+  }
+
+  function closeReserve() {
+    document.getElementById('reserveModal').style.display = 'none';
+  }
+
+  let currentProduct = '';
+
+  function submitReserve() {
+    const input = document.getElementById('reserveEmail');
+    const email = input.value.trim();
+
+    if (!email || !email.includes('@')) {
+      input.style.borderColor = 'rgba(220,80,80,0.6)';
+      return;
+    }
+
+    const btn = event.target;
+    btn.textContent = 'One moment...';
+    btn.disabled = true;
+
+    // Capture the email first (so we keep the lead even if they don't pay),
+    // then send them to the $1 Stripe reservation page.
+    function proceed() {
+      if (window.gtag) gtag('event', 'reservation_click', { source: 'modal:' + currentProduct, value: 1 });
+      document.getElementById('confirmedEmail').textContent = email;
+      document.getElementById('reserveForm').style.display    = 'none';
+      document.getElementById('reserveThankYou').style.display = 'block';
+      if (STRIPE_RESERVE_URL) window.open(STRIPE_RESERVE_URL, '_blank', 'noopener');
+    }
+
+    emailjs.send(EJS_SERVICE, EJS_TEMPLATE, {
+      user_email:   email,
+      product_name: currentProduct,
+      time:         new Date().toLocaleString()
+    }).then(proceed).catch(function(err) {
+      // Email capture failed, but still let them reserve so we don't lose the sale.
+      console.error('EmailJS error:', err);
+      proceed();
+    });
+  }
+
+  // Close modal on backdrop click
+  document.getElementById('reserveModal').addEventListener('click', function(e) {
+    if (e.target === this) closeReserve();
+  });
+</script>
+
+</body>
+</html>
