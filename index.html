@@ -452,6 +452,11 @@
     max-width: 1100px;
     margin: 0 auto;
   }
+  /* Validation phase: one hero SKU, so the lone card sits centered */
+  .products-grid.single {
+    grid-template-columns: 1fr;
+    max-width: 560px;
+  }
   .product-card {
     background: var(--slate);
     overflow: hidden;
@@ -831,7 +836,7 @@
   </a>
   <ul class="nav-links">
     <li><a href="#technology">Technology</a></li>
-    <li><a href="#collection">Collection</a></li>
+    <li><a href="#collection">The Ring</a></li>
     <li><a href="#materials">Materials</a></li>
     <li><a href="#about">About</a></li>
   </ul>
@@ -849,7 +854,7 @@
   <p class="hero-subtitle">The world's first premium smart ring that transfers all data through its charging port — no radio waves, no EMF, no compromise.</p>
 
   <div class="hero-actions">
-    <a href="#collection" class="btn-primary"><span>Explore Collection</span></a>
+    <a href="#collection" class="btn-primary"><span>Explore the Void</span></a>
     <a href="#technology" class="btn-ghost">How it works</a>
   </div>
 
@@ -1017,12 +1022,11 @@
 <section class="section-products" id="collection">
   <div class="products-header reveal">
     <div>
-      <p class="section-label">The Collection</p>
-      <h2 class="section-title">Choose your <em>silence.</em></h2>
+      <p class="section-label">The Ring</p>
+      <h2 class="section-title">One ring. <em>Done perfectly.</em></h2>
     </div>
-    <a href="#" class="btn-ghost">View All →</a>
   </div>
-  <div class="products-grid">
+  <div class="products-grid single">
 
     <!-- Ring 1 -->
     <div class="product-card reveal">
@@ -1048,145 +1052,21 @@
         </svg>
       </div>
       <div class="product-info">
-        <span class="product-badge">Signature</span>
+        <span class="product-badge">Founder Edition</span>
         <div class="product-name">Waveless Void</div>
-        <div class="product-tagline">Tungsten carbide finish. Matte black. The purist's choice — invisible on the hand, relentless in function.</div>
+        <div class="product-tagline">Grade-5 titanium, dark PVD matte black. The purist's choice — invisible on the hand, relentless in function.</div>
         <div class="product-footer">
           <div class="product-price">
-            <small>Starting at</small>
-            $349
+            <small>One price. No subscription.</small>
+            $429
           </div>
           <button class="btn-add" onclick="openReserve('Waveless Void')">Reserve →</button>
         </div>
       </div>
     </div>
 
-    <!-- Ring 2 -->
-    <div class="product-card reveal">
-      <div class="product-img">
-        <div class="product-glow"></div>
-        <svg class="product-ring-svg" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="goldBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#1e1810"/>
-              <stop offset="50%" stop-color="#2c2010"/>
-              <stop offset="100%" stop-color="#120e08"/>
-            </linearGradient>
-            <linearGradient id="goldBandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#6a5030"/>
-              <stop offset="30%" stop-color="#c9a96e"/>
-              <stop offset="55%" stop-color="#e8d5a8"/>
-              <stop offset="80%" stop-color="#c9a96e"/>
-              <stop offset="100%" stop-color="#6a5030"/>
-            </linearGradient>
-          </defs>
-          <circle cx="90" cy="90" r="72" fill="url(#goldBodyGrad)"/>
-          <circle cx="90" cy="90" r="72" fill="none" stroke="url(#goldBandGrad)" stroke-width="24"/>
-          <circle cx="90" cy="90" r="56" fill="url(#goldBodyGrad)"/>
-          <rect x="78" y="142" width="24" height="7" rx="3.5" fill="#c9a96e" opacity="0.9"/>
-          <rect x="82" y="145" width="16" height="1" rx="0.5" fill="#060608" opacity="0.6"/>
-        </svg>
-      </div>
-      <div class="product-info">
-        <span class="product-badge">Prestige</span>
-        <div class="product-name">Waveless Aurum</div>
-        <div class="product-tagline">18k gold-plated titanium. For those who wear their standards as openly as they wear their rings.</div>
-        <div class="product-footer">
-          <div class="product-price">
-            <small>Starting at</small>
-            $549
-          </div>
-          <button class="btn-add" onclick="openReserve('Waveless Aurum')">Reserve →</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ring 3 -->
-    <div class="product-card reveal">
-      <div class="product-img">
-        <div class="product-glow"></div>
-        <svg class="product-ring-svg" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="silverBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#14141e"/>
-              <stop offset="50%" stop-color="#1e1e2c"/>
-              <stop offset="100%" stop-color="#0a0a12"/>
-            </linearGradient>
-            <linearGradient id="silverBandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#4a5060"/>
-              <stop offset="30%" stop-color="#9aa0b8"/>
-              <stop offset="55%" stop-color="#d4d8e8"/>
-              <stop offset="80%" stop-color="#9aa0b8"/>
-              <stop offset="100%" stop-color="#4a5060"/>
-            </linearGradient>
-          </defs>
-          <circle cx="90" cy="90" r="72" fill="url(#silverBodyGrad)"/>
-          <circle cx="90" cy="90" r="72" fill="none" stroke="url(#silverBandGrad)" stroke-width="24"/>
-          <circle cx="90" cy="90" r="56" fill="url(#silverBodyGrad)"/>
-          <rect x="78" y="142" width="24" height="7" rx="3.5" fill="#9aa0b8" opacity="0.9"/>
-        </svg>
-      </div>
-      <div class="product-info">
-        <span class="product-badge">Essential</span>
-        <div class="product-name">Waveless Lumen</div>
-        <div class="product-tagline">Polished surgical steel. Refined simplicity — a ring that lets your data speak louder than your jewelry.</div>
-        <div class="product-footer">
-          <div class="product-price">
-            <small>Starting at</small>
-            $279
-          </div>
-          <button class="btn-add">Reserve →</button>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- Ring 4 -->
-    <div class="product-card reveal">
-      <div class="product-img">
-        <div class="product-glow" style="background: radial-gradient(circle at 50% 50%, rgba(42,100,160,0.12) 0%, transparent 70%);"></div>
-        <svg class="product-ring-svg" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="sapphireBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#080e1a"/>
-              <stop offset="50%" stop-color="#0e1828"/>
-              <stop offset="100%" stop-color="#04080f"/>
-            </linearGradient>
-            <linearGradient id="sapphireBandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#1a3058"/>
-              <stop offset="25%" stop-color="#2a5a9a"/>
-              <stop offset="50%" stop-color="#4a8ed4"/>
-              <stop offset="75%" stop-color="#2a5a9a"/>
-              <stop offset="100%" stop-color="#1a3058"/>
-            </linearGradient>
-            <radialGradient id="sapphireSheen" cx="35%" cy="30%" r="50%">
-              <stop offset="0%" stop-color="#7ab8f5" stop-opacity="0.6"/>
-              <stop offset="100%" stop-color="#1a3058" stop-opacity="0"/>
-            </radialGradient>
-          </defs>
-          <circle cx="90" cy="90" r="72" fill="url(#sapphireBodyGrad)"/>
-          <circle cx="90" cy="90" r="72" fill="none" stroke="url(#sapphireBandGrad)" stroke-width="24"/>
-          <circle cx="90" cy="90" r="72" fill="none" stroke="url(#sapphireSheen)" stroke-width="24"/>
-          <circle cx="90" cy="90" r="56" fill="url(#sapphireBodyGrad)"/>
-          <rect x="78" y="142" width="24" height="7" rx="3.5" fill="#2a5a9a" opacity="0.9"/>
-          <rect x="82" y="145" width="16" height="1" rx="0.5" fill="#7ab8f5" opacity="0.4"/>
-        </svg>
-      </div>
-      <div class="product-info">
-        <span class="product-badge" style="background: rgba(42,90,154,0.15); color: #7ab8f5; border-color: rgba(74,142,212,0.3);">Limited</span>
-        <div class="product-name">Waveless Sapphire</div>
-        <div class="product-tagline">Lab-grown sapphire crystal shell. Deep blue. For the collector who demands the rarest of materials.</div>
-        <div class="product-footer">
-          <div class="product-price">
-            <small>Starting at</small>
-            $749
-          </div>
-          <button class="btn-add" onclick="openReserve('Waveless Sapphire')">Reserve →</button>
-        </div>
-      </div>
-    </div>
-
   </div>
+  <p class="reveal" style="text-align:center;margin-top:48px;font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--mist);">One ring · One price · More finishes after launch</p>
 </section>
 
 <!-- TECHNOLOGY -->
@@ -1365,31 +1245,27 @@
     <div>
       <div class="footer-col-title">Products</div>
       <ul class="footer-links">
-        <li><a href="#">Waveless Void</a></li>
-        <li><a href="#">Waveless Aurum</a></li>
-        <li><a href="#">Waveless Lumen</a></li>
-        <li><a href="#">Charging Cradle</a></li>
-        <li><a href="#">Accessories</a></li>
+        <li><a href="#collection">Waveless Void</a></li>
+        <li><a href="#technology">Charging Cradle</a></li>
+        <li><a href="#waitlist">Join the Waitlist</a></li>
+        <li><a href="javascript:void(0)" onclick="goReserve('footer')">Reserve — $1</a></li>
       </ul>
     </div>
     <div>
       <div class="footer-col-title">Company</div>
       <ul class="footer-links">
-        <li><a href="#">About</a></li>
-        <li><a href="#">Technology</a></li>
-        <li><a href="#">Sustainability</a></li>
-        <li><a href="#">Careers</a></li>
-        <li><a href="#">Press</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#technology">Technology</a></li>
+        <li><a href="#materials">Materials</a></li>
+        <li><a href="https://www.instagram.com/waveless.official.startup/" target="_blank" rel="noopener">Instagram</a></li>
       </ul>
     </div>
     <div>
       <div class="footer-col-title">Support</div>
       <ul class="footer-links">
-        <li><a href="#">Sizing Guide</a></li>
-        <li><a href="#">Warranty</a></li>
-        <li><a href="#">Repairs</a></li>
-        <li><a href="#">FAQ</a></li>
-        <li><a href="#">Contact</a></li>
+        <li><a href="#materials">Materials &amp; Sizing</a></li>
+        <li><a href="#waitlist">Early Access</a></li>
+        <li><a href="https://www.instagram.com/waveless.official.startup/" target="_blank" rel="noopener">Contact on Instagram</a></li>
       </ul>
     </div>
   </div>
@@ -1709,10 +1585,19 @@
   //    instead of breaking. See business/01_DEMAND_VALIDATION.md.
   const STRIPE_RESERVE_URL = 'https://buy.stripe.com/test_8x228k0Y576gbip2tvaR200';  // TEST link — swap for the LIVE buy.stripe.com URL before the real campaign
 
+  // ── Analytics (GoatCounter — free, privacy-friendly, no cookies) ────
+  // Pageviews are counted automatically by the snippet near </body>.
+  // This helper records button-click events on top of that.
+  function track(name) {
+    if (window.goatcounter && window.goatcounter.count) {
+      window.goatcounter.count({ path: name, title: name, event: true });
+    }
+  }
+
   // Sends the visitor to the Stripe reservation page (+ analytics ping).
   // `source` is just a label so you can see which button converts.
   function goReserve(source) {
-    if (window.gtag) gtag('event', 'reservation_click', { source: source || 'unknown', value: 1 });
+    track('reserve-click-' + (source || 'unknown'));
     if (!STRIPE_RESERVE_URL) {
       alert("Reservations open in just a moment — please join the free waitlist above and we'll email you the instant your spot is ready.");
       return;
@@ -1739,6 +1624,7 @@
       product_name: 'Waitlist (main form)',
       time:         new Date().toLocaleString()
     }).then(function() {
+      track('waitlist-signup');
       input.style.display = 'none';
       btn.style.display   = 'none';
       document.getElementById('ctaSuccess').style.display = 'block';
@@ -1788,28 +1674,24 @@
       return;
     }
 
-    const btn = event.target;
-    btn.textContent = 'One moment...';
-    btn.disabled = true;
+    track('reserve-click-modal');
 
-    // Capture the email first (so we keep the lead even if they don't pay),
-    // then send them to the $1 Stripe reservation page.
-    function proceed() {
-      if (window.gtag) gtag('event', 'reservation_click', { source: 'modal:' + currentProduct, value: 1 });
-      document.getElementById('confirmedEmail').textContent = email;
-      document.getElementById('reserveForm').style.display    = 'none';
-      document.getElementById('reserveThankYou').style.display = 'block';
-      if (STRIPE_RESERVE_URL) window.open(STRIPE_RESERVE_URL, '_blank', 'noopener');
-    }
+    // Open Stripe NOW, synchronously inside the click — popup blockers kill
+    // window.open calls made later from inside the email callback.
+    if (STRIPE_RESERVE_URL) window.open(STRIPE_RESERVE_URL, '_blank', 'noopener');
 
+    document.getElementById('confirmedEmail').textContent = email;
+    document.getElementById('reserveForm').style.display    = 'none';
+    document.getElementById('reserveThankYou').style.display = 'block';
+
+    // Capture the lead in the background — even if this fails, the visitor
+    // is already on the Stripe page, so the sale isn't lost.
     emailjs.send(EJS_SERVICE, EJS_TEMPLATE, {
       user_email:   email,
       product_name: currentProduct,
       time:         new Date().toLocaleString()
-    }).then(proceed).catch(function(err) {
-      // Email capture failed, but still let them reserve so we don't lose the sale.
+    }).catch(function(err) {
       console.error('EmailJS error:', err);
-      proceed();
     });
   }
 
@@ -1818,6 +1700,11 @@
     if (e.target === this) closeReserve();
   });
 </script>
+
+<!-- GoatCounter analytics — free, no cookies, privacy-friendly (fits the brand).
+     Dashboard: https://waveless.goatcounter.com — pageviews are automatic;
+     button clicks are sent via track(). -->
+<script data-goatcounter="https://waveless.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
 </body>
 </html>
